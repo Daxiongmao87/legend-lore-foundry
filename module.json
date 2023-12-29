@@ -20,7 +20,7 @@
   "author": "Daxiongmao87",
   "url": "https://github.com/Daxiongmao87/5e-gpt-populator",
   "manifest": "https://github.com/Daxiongmao87/5e-gpt-populator/releases/download/0.1.0/module.json",
-  "download": "https://github.com/Daxiongmao87/5e-gpt-populator/releases/download/0.1.0/module.zip",
+  "download": "https://github.com/Daxiongmao87/5e-gpt-populator/archive/refs/tags/0.1.0.zip",
   "scripts": ["main.js"],
-  "styles": ["styles.css"]
+  "styles": ["templates/styles.css"]
 }
