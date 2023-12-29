@@ -22,5 +22,5 @@
   "manifest": "https://github.com/Daxiongmao87/5e-gpt-populator/releases/download/0.1.2/module.json",
   "download": "https://github.com/Daxiongmao87/5e-gpt-populator/archive/refs/tags/0.1.2.zip",
   "scripts": ["main.js"],
-  "styles": ["templates/styles.css"]
+  "styles": ["styles/styles.css"]
 }

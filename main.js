@@ -1,4 +1,4 @@
-Hooks.once('init', async function() {
+Hooks.once('ready', async function() {
     console.log('5e GPT Populator | Initializing');
     // Register settings
     game.settings.register('5e-gpt-populator', 'openaiApiKey', {
