@@ -51,22 +51,6 @@ Hooks.on('renderJournalSheet', (journalSheet, html, data) => {
     });
 });
 
-// Function to modify the tooltip to include an option for GPT generation
-async function modifyTooltipForGPT(selectedText) {
-    const tooltip = document.querySelector(/* selector for the tooltip element */);
-
-    if (tooltip && !tooltip.querySelector('.gpt-option')) {
-        const gptOption = document.createElement('button');
-        gptOption.className = 'gpt-option';
-        gptOption.textContent = 'Generate with GPT';
-        gptOption.onclick = (event) => {
-            event.stopPropagation(); // Prevent tooltip from closing
-            handleGPTGeneration(selectedText);
-        };
-        tooltip.appendChild(gptOption);
-    }
-}
-
 // Function to handle the GPT generation process
 function handleGPTGeneration(selectedText) {
     // Implement the logic to use GPT for content generation
@@ -75,4 +59,21 @@ function handleGPTGeneration(selectedText) {
     // ...
 }
 
+// Assuming PossibleMatchesTooltip is accessible
+
+class MyPossibleMatchesTooltip extends PossibleMatchesTooltip {
+  _findMatches(text) {
+    let html = super._findMatches(text);
+
+    // Add your custom "Generate with GPT" option
+    html += '<section><h4>Custom Option</h4><p>';
+    html += `<a href="#" class="gpt-generate" data-text="${text}">Generate with GPT</a>`;
+    html += "</p></section>";
+
+    return html;
+  }
+}
+
+// Logic to replace Foundry VTT's PossibleMatchesTooltip with MyPossibleMatchesTooltip
+// This depends on how PossibleMatchesTooltip is instantiated and used within Foundry VTT
 
