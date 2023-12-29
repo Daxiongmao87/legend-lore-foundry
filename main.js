@@ -61,17 +61,61 @@ function handleGPTGeneration(selectedText) {
 
 // Assuming PossibleMatchesTooltip is accessible
 
-class MyPossibleMatchesTooltip extends PossibleMatchesTooltip {
-  _findMatches(text) {
-    let html = super._findMatches(text);
+// Function to create the aside element
+function createAsideElement() {
+    // Create the H4 element with text
+    const h4 = document.createElement('h4');
+    h4.textContent = 'GPT';
 
-    // Add your custom "Generate with GPT" option
-    html += '<section><h4>Custom Option</h4><p>';
-    html += `<a href="#" class="gpt-generate" data-text="${text}">Generate with GPT</a>`;
-    html += "</p></section>";
+    // Create the section element and append the H4 to it
+    const section = document.createElement('section');
+    section.appendChild(h4);
 
-    return html;
-  }
+    // Create the aside element with the appropriate classes
+    const aside = document.createElement('aside');
+    aside.className = 'locked-tooltip active link-matches';
+    aside.appendChild(section);
+
+    // Insert the aside into the document, for example within the current div.
+    // You may want to add logic here to place the `aside` at a specific location.
+    return aside;
+}
+
+// Function to get the selected text
+function getSelectedText() {
+    if (window.getSelection) {
+        return window.getSelection().toString();
+    } else if (document.selection && document.selection.type != "Control") {
+        return document.selection.createRange().text;
+    }
+    return '';
+}
+
+// Get the div element with multiple classes
+const editorDiv = document.querySelector('div.editor-content.journal-page-content.ProseMirror');
+
+// Check if the element exists to avoid errors
+if (editorDiv) {
+    editorDiv.addEventListener('mouseup', function(event) {
+        const selectedText = getSelectedText();
+        if (selectedText) { // Check if there's a selected text
+            console.log('User selected text:', selectedText);
+            // Remove any existing asides
+            const existingAside = document.querySelector('aside.locked-tooltip.active.link-matches');
+            if (existingAside) {
+                existingAside.remove();
+            }
+            // Append the new aside element to the div or other location
+            const asideElement = createAsideElement();
+            // You can change where you want the aside to appear depending on your requirements
+            // For instance, appending to the editor div
+            editorDiv.appendChild(asideElement);
+            // Or insert before or after the editor div
+            // editorDiv.parentNode.insertBefore(asideElement, editorDiv.nextSibling);
+        }
+    });
+} else {
+    console.log('The editor div does not exist.');
 }
 
 // Logic to replace Foundry VTT's PossibleMatchesTooltip with MyPossibleMatchesTooltip
