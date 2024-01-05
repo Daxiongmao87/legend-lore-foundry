@@ -21,6 +21,7 @@
   "url": "https://github.com/Daxiongmao87/5e-gpt-populator",
   "manifest": "https://raw.githubusercontent.com/Daxiongmao87/5e-gpt-populator/main/module.json",
   "download": "https://github.com/Daxiongmao87/5e-gpt-populator/archive/refs/tags/0.2.0.zip",
-  "scripts": ["main.js"],
+  "scripts": [],
+  "esmodules": ["main.js"],
   "styles": ["styles/styles.css"]
 }
