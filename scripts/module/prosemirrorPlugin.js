@@ -4,7 +4,7 @@ Hooks.once('ready', () => {
 
     // Modify ProseMirrorHighlightMatchesPlugin
     window.ProseMirror.ProseMirrorHighlightMatchesPlugin.build = function (schema, options = {}) {
-        console.log("5e-gpt-populator | ProseMirrorHighlightMatchesPlugin build method called.");
+        console.log("legend-lore | ProseMirrorHighlightMatchesPlugin build method called.");
         
         const originalPlugin = originalBuild.call(window.ProseMirror.ProseMirrorHighlightMatchesPlugin, schema, options);
 
@@ -12,7 +12,7 @@ Hooks.once('ready', () => {
         const originalView = originalPlugin.spec.view;
         if (typeof originalView === 'function') {
             originalPlugin.spec.view = (editorView) => {
-                console.log("5e-gpt-populator | Custom view method called.");
+                console.log("legend-lore | Custom view method called.");
 
                 // Get the original tooltip instance
                 const tooltipInstance = originalView(editorView);
@@ -21,7 +21,7 @@ Hooks.once('ready', () => {
                 if (typeof tooltipInstance.update === 'function') {
                     const originalUpdate = tooltipInstance.update.bind(tooltipInstance);
                     tooltipInstance.update = async function(view, lastState) {
-                    console.log("5e-gpt-populator | Custom update method called.");
+                    console.log("legend-lore | Custom update method called.");
 
                     // Capture the initial position of the selection
                     const state = view.state;
@@ -52,16 +52,16 @@ Hooks.once('ready', () => {
                         }
                         const gptGenerateButtonContent = `
                             <section style="background-color:gold;">
-                                <h4 style="color:black;">GPT Populator</h4>
+                                <h4 style="color:black;">Legend Lore</h4>
                                 <a class="generate-entry-link content-link" onclick="generateEntryForText('${safeHighlightedText}', '${journalEntryId}'); return false;">
-                                    <i class="fas fa-robot"></i>Generate Entry for ${highlightedText}
+                                    <i class="fas fa-wand-sparkles"></i>Generate Entry for ${highlightedText}
                                 </a>
                             </section>
                         `;
                     
                     window.generateEntryForText = function(highlightedText, journalEntryId) {
-                        console.log(`5e-gpt-populator | Preparing to generate entry for: ${highlightedText}`);
-                        let originalContent = editorView.dom.closest('.journal-page-content').innerHTML.replace(/<([a-z][a-z0-9]*)[^>]*?(\/?)>/gi, '<$1$2>');
+                        console.log(`legend-lore | Preparing to generate entry for: ${highlightedText}`);
+                        let originalContent = new DOMParser().parseFromString(editorView.dom.closest('.journal-page-content').innerHTML.replace(/<([a-z][a-z0-9]*)[^>]*?(\/?)>/gi, '<$1$2>'), 'text/xml');
                         let originalTitle = editorView.dom.closest('.editable.flexcol').querySelector('.journal-header').querySelector('.title').value;
                         // Pass only the highlighted text and journal entry ID
                         openContextDialog(highlightedText, journalEntryId, originalTitle, originalContent);
@@ -69,11 +69,11 @@ Hooks.once('ready', () => {
                     // Check if the original update method resulted in an active tooltip.
                     if (this.tooltip) {
                         // The original update method created or found an existing tooltip, now append the dummy content.
-                        console.log("5e-gpt-populator | Adding dummy content to existing tooltip.");
+                        console.log("legend-lore | Adding dummy content to existing tooltip.");
                         this.tooltip.innerHTML += gptGenerateButtonContent;
                     } else {
                         // The original function did not create a tooltip, so let's create one now with the dummy content.
-                        console.log("5e-gpt-populator | Creating a new tooltip with dummy content.");
+                        console.log("legend-lore | Creating a new tooltip with dummy content.");
                         this._createTooltip(position, gptGenerateButtonContent, {cssClass: "link-matches"});
                     }
                     }

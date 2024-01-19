@@ -2,7 +2,7 @@
 export const max_tokens=4096;
 export const base_url='https://api.openai.com/v1/chat/completions';
 export function registerSettings() {
-    game.settings.register('5e-gpt-populator', 'openaiApiKey', {
+    game.settings.register('legend-lore', 'openaiApiKey', {
         name: "OpenAI API Key",
         hint: "Enter your OpenAI API key here.",
         scope: 'world',
@@ -10,16 +10,15 @@ export function registerSettings() {
         type: String,
         default: ""
     });
-    game.settings.register('5e-gpt-populator', 'model', {
-        name: "Model",
-        hint: "Please enter a valid API Key.",
+    game.settings.register('legend-lore', 'models', {
+        name: "Models",
+        hint: "Enter models you wish to have available in a space-separated list.  Only models with JSON mode are supported. For model information, see [OpenAI Models]. For pricing information, see [OpenAI Pricing Link].",
         scope: 'world',
         config: true,
         type: String,
-        choices: {},
-        default: "None"
+        default: "gpt-3.5-turbo-1106 gpt-4-1106-preview" // or set a default model if desired
     });
-    game.settings.register('5e-gpt-populator', 'temperature', {
+    game.settings.register('legend-lore', 'temperature', {
         name: "Temperature",
         hint: "Enter a desired temperature (higher is more creative, lower is more consistent).",
         scope: 'world',
@@ -27,18 +26,98 @@ export function registerSettings() {
         type: Number,
         default: "0.3"
     });
-    updateModelDropdown();
+    // Register the settings menu
+    game.settings.registerMenu("legend-lore", "templateSettingMenu", {
+        name: "Journal Entry Templates",
+        label: "Select Templates", 
+        hint: "Select journal entry templates for your module.",
+        icon: "fas fa-bars",
+        type: JournalEntrySelectionApplication,
+        restricted: true
+      });
+      
+      game.settings.register('legend-lore', 'journalEntryTemplates', {
+        scope: 'world',
+        config: false,
+        type: Object,
+        default: ["journal-entry-templates"]
+      });
+  
+      
+    //updateModelDropdown();
 }
 
-function setBaseUrl(url) {
-    let baseURL=url;
-    return url;
-}
+class JournalEntrySelectionApplication extends FormApplication {
+    constructor(...args) {
+      super(...args);
+      this.journalEntries = this._getJournalEntryCompendiums();
+    }
+  
+    static get defaultOptions() {
+      return mergeObject(super.defaultOptions, {
+        id: "journal-entry-selection",
+        classes: ["legend-lore"],
+        title: "Select Journal Entries",
+        template: "modules/legend-lore/templates/journal-entry-selection.html",
+        width: 640,
+        height: "auto",
+        resizable: true
+      });
+    }
+  
+    getData() {
+        const selectedIds = new Set(game.settings.get('legend-lore', 'journalEntryTemplates'));
+        return {
+            entries: this.journalEntries.map(entry => ({
+                ...entry,
+                isSelected: selectedIds.has(entry.id)
+            }))
+        };
+    }
+
+    async _updateObject(event, formData) {
+        const selectedEntries = Object.entries(formData)
+            .filter(([key, value]) => value)
+            .map(([key]) => key); // key is now the id
+        await game.settings.set('legend-lore', 'journalEntryTemplates', selectedEntries);
+    }
+
+    activateListeners(html) {
+        super.activateListeners(html);
+    
+        const filterInput = html.find("#filter-input");
+        const entryContainer = html.find("#journal-entries-container");
+    
+        filterInput.on("keyup", event => {
+            const searchTerm = event.target.value.toLowerCase();
+            entryContainer.find(".checkbox").each(function() {
+                const label = $(this).find("label").text().toLowerCase();
+                const isMatch = label.includes(searchTerm);
+                $(this).toggle(isMatch);
+            });
+        });
+    }
+    
+  
+    _getJournalEntryCompendiums() {
+        const packs = Array.from(game.packs);
+        return packs
+            .filter(pack => pack.metadata.type === "JournalEntry")
+            .map(pack => ({
+                id: pack.metadata.id,
+                name: pack.metadata.name,
+                label: `${pack.metadata.label} `,
+                group: `${pack.metadata.id.split('.')[0]}`
+            }));
+    }
+  }
+  
+
 async function updateModelDropdown(html) {
     return new Promise(async (resolve, reject) => {
-        const apiKey = game.settings.get('5e-gpt-populator', 'openaiApiKey');
+        const apiKey = game.settings.get('legend-lore', 'openaiApiKey');
         if (!apiKey) {
-            game.settings.register('5e-gpt-populator', 'model', {
+            game.settings.register('legend-lore', 'model', {
               name: "Model",
               hint: "Please enter a valid API Key.",
               scope: 'world',
@@ -62,8 +141,8 @@ async function updateModelDropdown(html) {
                     choices[model.id] = model.id;
                     return choices;
                 }, {});
-            const defaultModel=(game.settings.get('5e-gpt-populator', 'model')) ? game.settings.get('5e-gpt-populator', 'model') : "gpt-3.5-turbo"
-            await game.settings.register('5e-gpt-populator', 'model', {
+            const defaultModel=(game.settings.get('legend-lore', 'model')) ? game.settings.get('legend-lore', 'model') : "gpt-3.5-turbo"
+            await game.settings.register('legend-lore', 'model', {
                 name: "Model",
                 hint: "Select a model. For pricing information, see [OpenAI Pricing Link].",
                 scope: 'world',
@@ -73,8 +152,8 @@ async function updateModelDropdown(html) {
                 default: defaultModel // or set a default model if desired
             });
             if (html) {
-              html.find('[data-setting-id="5e-gpt-populator.model"]').find('[class="notes"]')[0].innerHTML = 'Select a model. For pricing information, see <a href="https://openai.com/pricing" target="_blank">OpenAI Pricing</a>.'
-              let dropdown = html.find('[name="5e-gpt-populator.model"]');
+              html.find('[data-setting-id="legend-lore.model"]').find('[class="notes"]')[0].innerHTML = 'Select a model. For pricing information, see <a href="https://openai.com/pricing" target="_blank">OpenAI Pricing</a>.'
+              let dropdown = html.find('[name="legend-lore.model"]');
               $.each(models, function(model) {
                 dropdown.append($("<option></option>")
                   .attr("value", model)
@@ -91,52 +170,44 @@ async function updateModelDropdown(html) {
     });
 }
 
-Hooks.on('renderModuleSettings', (app, html, data) => {
-    // Check if this is your module's settings
-    if (data.module === '5e-gpt-populator') {
-        // Load your HTML template
-        fetch('modules/5e-gpt-populator/templates/settings.html')
-            .then(response => response.text())
-            .then(template => {
-                // Append or replace existing HTML with your template
-                html.find('.settings-body').html(template);
-
-                // Set the value of the input from saved settings
-                html.find('#openai-api-key').val(game.settings.get('5e-gpt-populator', 'openaiApiKey'));
-
-                // Add event listener for form submission
-                html.on('submit', 'form', async (event) => {
-                    event.preventDefault();
-                    const apiKey = html.find('#openai-api-key').val();
-                    await game.settings.set('5e-gpt-populator', 'openaiApiKey', apiKey);
-                });
-            });
+function getJournalEntryCompendiums() {
+    const packs = Array.from(game.packs);
+    let journalEntryPacks = [];
+    for (let i = 0; i < packs.length; i++) {
+    if(packs[i].metadata.type == "JournalEntry") {
+        journalEntryPacks.push(packs[i].metadata);
     }
-});
+    }
+    return journalEntryPacks;
+}
 
-Hooks.on('renderPackageConfiguration', (app, html, data) => {
-    const apiKeyInput = html.find('[name="5e-gpt-populator.openaiApiKey"]');
-    html.find('[data-setting-id="5e-gpt-populator.model"]').find('[class="notes"]')[0].innerHTML = 'Select a model. For pricing information, see <a href="https://openai.com/pricing" target="_blank">OpenAI Pricing</a>.'
-    let debouncedApiKeychange = debounce(updateModelDropdown, 1000);
+function handleApiKeyInput(html) {
+    const apiKeyInput = html.find('[name="legend-lore.openaiApiKey"]');
+    html.find('[data-setting-id="legend-lore.model"]').find('[class="notes"]')[0].innerHTML = 'Select a model. For pricing information, see <a href="https://openai.com/pricing" target="_blank">OpenAI Pricing</a>.';
+
+    let debouncedApiKeyChange = debounce(updateModelDropdown, 1000);
+
     // Only proceed if the input exists and does not have the listener attached.
     if (apiKeyInput.length > 0 && !apiKeyInput.data('listener-attached')) {
-      // Add an 'input' event listener to the input field.
-      apiKeyInput.on('input', (event) => {
-        // Whenever the input value changes, log the new value to the console.
-        let newValue=event.target.value;
-        game.settings.set('5e-gpt-populator', 'openaiApiKey', newValue);
-        debouncedApiKeychange(html);
+        apiKeyInput.on('input', (event) => {
+            let newValue = event.target.value;
+            game.settings.set('legend-lore', 'openaiApiKey', newValue);
+            debouncedApiKeyChange(html);
+            console.log('OpenAI API Key changed:', newValue);
+        });
 
-        console.log('OpenAI API Key changed:', newValue);
-        // Additional handling code for the new value can go here.
-      });
-
-      // Set a data attribute to prevent attaching the listener multiple times.
-      if(html) {}
         apiKeyInput.data('listener-attached', true);
     }
+}
 
+Hooks.on('renderPackageConfiguration', (app, html, data) => {
+    let apiKeyInput = $('[name="legend-lore.openaiApiKey"]')[0];
+    if (apiKeyInput) {
+        apiKeyInput.type = 'password';
+        apiKeyInput.autocomplete = 'one-time-code';
+    }
 });
+
 Hooks.once('ready', () => {
     registerSettings();
 });

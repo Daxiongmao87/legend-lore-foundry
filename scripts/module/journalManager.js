@@ -1,5 +1,5 @@
 // Functions related to managing journal entries
-export async function createNewJournalEntryPage(journalEntryId, pageName, originalContent, pageContent) {
+export async function createNewJournalEntryPage(journalEntryId, pageName, highlightedText, originalContent, pageContent) {
     // Fetch the existing JournalEntry to which the new page will be added
     let journalEntry = game.journal.get(journalEntryId);
     if (!journalEntry) {
@@ -40,15 +40,16 @@ export async function createNewJournalEntryPage(journalEntryId, pageName, origin
       console.log(`New page created with ID: ${createdPage.id}`);
       // Replace highlighted text in original content with UUID
       
-      let updatedContent = replaceHighlightedTextInContent(pageName, createdPage.id, originalContent);
+      let updatedContent = replaceHighlightedTextInContent(highlightedText, createdPage.id, originalContent);
 
       // Update the editor's content
       updateEditorContent(updatedContent);
 
       // Save the changes
-      saveEditorChanges();
+      //saveEditorChanges();
 
       // Allow a brief delay for the UI to update before attempting navigation
+      /*
       setTimeout(() => {
         // Call the journal entry's sheet method to switch to the new page
         if (journalEntry.sheet?.goToPage) {
@@ -57,7 +58,7 @@ export async function createNewJournalEntryPage(journalEntryId, pageName, origin
           console.warn(`Could not switch to the new page with ID: ${createdPage.id}`);
         }
       }, 100);
-
+      */
       // Return the createdPage to enable chaining or further processing if needed
       return createdPage;
     } catch (error) {

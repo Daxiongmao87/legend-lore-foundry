@@ -1,13 +1,46 @@
 <form>
-  <div class="form-group">
-    <label for="additional-context">Additional Context:</label>
-    <textarea id="additional-context" name="additionalContext"></textarea>
-  </div>
-  <button type="submit">Generate</button>
-  <div id="loading-indicator" style="display: none;">
-    <div class="spinner">
-      <i class="fas fa-cog fa-spin"></i>
-      Loading...
+    <div style="height: 128px;">
+      <div style="float: left; width: 50%; padding: 0px 8px 8px 8px;">
+        <div>
+          <label for="entry-title">Entry Title:</label>
+          <input type="text" class="legend-lore entry-title" name="entry-title"></input>
+        </div>
+        <div>
+          <label for="gpt-model">Model:</label>
+          <select id="gpt-model" class="legend-lore gpt-model" name="gpt-model" style="width:100%;"></select>
+        </div>
+        <div>
+          <label for="entry-template">Template:</label>
+          <select id="entry-template" class="legend-lore entry-template" name="entry-template" style="width:100%;"></select>
+        </div>
+      </div>
+      <div style="float: right; width: 50%; padding: 0px 8px 8px 8px;">
+        <label for="additional-context">Additional Context:</label>
+        <textarea class="legend-lore additional-context" name="additionalContext" placeholder="Add any additional information or instruction for the AI model to consider." style="height:117px;"></textarea>
+      </div>
+      <hr>
     </div>
-  </div>
+    <div style="display:inline-block; width: 100%;">
+      <div style="width: 50%; float:left; padding: 8px 0px 8px 8px;">
+        <label>Template Preview:</label>
+        <div class="legend-lore response-container" style="height: 200px; border-radius:4px; margin: 8px 8px 8px 0px; box-shadow: 0 0 4px inset;">
+          <div class="legend-lore response-content" style="height: 200px; overflow-y: auto; margin: 8px 0px 8px 0px;">
+            <div class="legend-lore template-preview" style="height:inherit; line-height:184px; text-align: center; padding-left:8px; padding-right:8px;">Select a template</div>
+              <div></div>
+          </div>
+        </div>
+      </div>
+      <div style="width: 50%;float:right; padding: 8px 8px 8px 8px;">
+        <label>Content Preview:</label>
+        <div class="legend-lore response-container" style="height: 200px; border-radius:4px; margin: 8px 0px 8px 0px; box-shadow: 0 0 4px inset;">
+          <div class="legend-lore response-content" style="height: 200px; overflow-y: auto; margin: 8px 0px 8px 0px;">
+            <div class="legend-lore generation-preview" style="height:inherit; line-height:184px; text-align: center; padding-left:8px; padding-right:8px;">Pending Generation</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:0.8em;">
+      <div id="token-count" style="height: 18px;text-align:center;"><strong>Tokens sent: ----, Tokens received: ----, Total Tokens Used: ----</strong></div>
+      <div style="height: 18px; text-align:center;"><i><strong>NOTE:</strong> Price per token is dependent on model and token type (sent/received). For more information see <a href="https://openai.com/pricing" target="_blank">OpenAI Pricing</a></i></div>
+    </div>
 </form>

@@ -1,0 +1,19 @@
+<form>
+    <div class="form-group">
+      <input type="text" id="filter-input" placeholder="Filter templates...">
+    </div>
+    <div class="form-group" id="journal-entries-container"style="padding: 4px; width: fit-content;">
+        {{#each entries}}
+          <div class="checkbox">
+            <div style="margin: 8px; width: max-content; box-shadow: 0 0 4px gray; padding: 6px; border-radius: 4px; background-color: rgba(255,255,255,0.25);">
+              <input type="checkbox" name="{{id}}" {{#if isSelected}}checked{{/if}} style="width:16px; height:16px;"">
+              {{label}} <sub>[<a style="color: rgb(71, 24, 62);">{{group}}</a>]</sub>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    <div class="form-group">
+      <button type="submit">Save Selection</button>
+    </div>
+  </form>
+  

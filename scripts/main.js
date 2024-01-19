@@ -7,6 +7,6 @@ import './module/utils.js';
 
 // Initialize the module
 Hooks.once('ready', () => {
-    console.log("5e-gpt-populator | Ready hook triggered.");
+    console.log("legend-lore | Ready hook triggered.");
     // Other initialization code...
 });
