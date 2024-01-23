@@ -2,56 +2,137 @@ import { processGPTRequest } from "./api.js";
 import { createNewJournalEntryPage } from "./journalManager.js";
 import { ElementHandler } from './elementTransformer.js';
 // Functions related to UI manipulation like tooltips, dialogs, etc.
-export async function openContextDialog(highlightedText, journalEntryId, originalTitle, originalContent) {
+export async function openDialog(options = {
+  type,
+  highlightedText, 
+  journalEntryId, 
+  originalTitle, 
+  originalContent
+}) {
+  const type = options.type;
+  const journalEntryId = options.journalEntryId;
+  console.log(options.journalEntryId);
   // Fetch the journal entry to get its name and current content for additional context
   const journalEntry = game.journal.get(journalEntryId);
-  if (!journalEntry) {
-    console.error(`Could not find JournalEntry with ID: ${journalEntryId}`);
-    return;
+  let journalEntryName;
+  if (journalEntry) {
+    journalEntryName = journalEntry.name;
   }
-  const journalEntryName = journalEntry.name; // Get the name of the JournalEntry
-
-  console.log(`Opening context dialog for: ${highlightedText} within Journal Entry: ${journalEntryName}`);
-
   // Load the dialog HTML from the provided template path
-  const dialogTemplate = await renderTemplate('modules/legend-lore/templates/context-dialog.html', {});
+  let dialogTitle, dialogTemplate, highlightedText, originalTitle, originalContent, contextName, contextPlaceholder;
+  if (type === "context") {
+    highlightedText = options.highlightedText;
+    originalTitle = options.originalTitle;
+    originalContent = options.originalContent;
+    contextName = "Additional Context";
+    contextPlaceholder = "OPTIONAL: Add any additional information or instruction for the AI model to consider.";
+    dialogTitle = `Additional Context for "${highlightedText}"`;
+  } else if (type === "generate") {
+    dialogTitle = `Generate New Journal Entry Page`;
+    contextName = "Generation Context";
+    contextPlaceholder = "REQUIRED: Add information or instruction for the AI model to use as inspiration for generating this entry.";
+  }
+  dialogTemplate = await renderTemplate('modules/legend-lore/templates/dialog.html', {
+    contextName: contextName, 
+    contextPlaceholder: contextPlaceholder
+  });
+  
+  // Append this dropdown to your dialog content
 
   // Create and render a new dialog
   let d = new Dialog({
-      title: `Additional Context for "${highlightedText}"`,
+      title: dialogTitle,
       content: dialogTemplate,
       buttons: {
         accept: {
           icon: '<i class="fas fa-check"></i>',
           label: "Accept",
-          callback: (html) => createNewJournalEntryPage(journalEntryId, $(".legend-lore.entry-title")[0].value, highlightedText, originalContent, $(".legend-lore.generation-preview").html())
+          disabled: true,
+          callback: (html) => {
+            let selectedJournalId = html.find('.journal-entry-dropdown').val();
+            createNewJournalEntryPage({
+                type: type,
+                journalEntryId: selectedJournalId,
+                pageName: html.find(".legend-lore.entry-title")[0].value,
+                highlightedText: highlightedText,
+                originalContent: originalContent,
+                pageContent: html.find(".legend-lore.generation-preview").html()
+            });
+          }
         },
         cancel: {
           icon: '<i class="fas fa-times"></i>',
           label: "Cancel"
-          // ... [callback for cancel]
         }
       },
       default: "cancel",
-      render: (html) => dialogHelper(html, highlightedText, journalEntryName, originalTitle, originalContent, journalEntryId)
+      render: async (html) => dialogHelper({
+        html: html, 
+        type: type,
+        highlightedText: highlightedText, 
+        journalEntryName: journalEntryName, 
+        originalTitle: originalTitle, 
+        originalContent: originalContent, 
+        journalEntryId: journalEntryId
+      })
     }).render(true, {
       width: 800
     });
   }
 
-function dialogHelper(html, highlightedText, journalEntryName, originalTitle, originalContent, journalEntryId) {
-  $(".dialog-buttons").prepend('<button class="dialog-button generate"><i class="fas fa-wand-sparkles"></i>Generate</button>');
-  $(".legend-lore.entry-title").val(highlightedText);
-  //$(".legend-lore.")
-  // Add event listener to the new 'Generate' button
-  $('.dialog-button.generate').click(function() {
-      handleGenerate(html, highlightedText, journalEntryName, originalTitle, originalContent, journalEntryId); // Call your existing handleGenerate function
+async function dialogHelper(options = {
+  html, 
+  type,
+  highlightedText, 
+  pageName,
+  journalEntryName, 
+  originalTitle, 
+  originalContent, 
+  journalEntryId
+}) {
+  await populateJournalDropdown(options.journalEntryId);
+  console.log(options.html.find(".accept"));
+  $(options.html[2]).prepend('<button class="dialog-button generate"><i class="fas fa-wand-sparkles"></i> Generate</button>');
+  const generateButton = options.html.find(".dialog-button.generate");
+  
+  const acceptButton = options.html.find(".dialog-button.accept");
+  const contextField = options.html.find(".context");
+  const titleField = options.html.find(".entry-title");
+  titleField.on("input", () => {
+    generateButton.prop("disabled",(!(contextField.val() && titleField.val())));
   });
-  html.find('#entry-template').on('change', function() {
+  if(options.type === "generate") {
+    generateButton.prop("disabled",true);
+    contextField.on("input", () => {
+      
+      generateButton.prop("disabled",(!(contextField.val() && titleField.val())));
+    });
+  }
+  const contentPreview = options.html.find(".generation-preview");
+  contentPreview.on("change", () => {
+    if ( contentPreview.innerHTML != "Pending Generation") {
+      //acceptButton.disabled = false;
+    }
+  });
+  options.html.find(".legend-lore.entry-title").val(options.highlightedText);
+  generateButton.click(function() {
+      handleGenerate(options = {
+        html: options.html, 
+        type: options.type,
+        highlightedText: options.highlightedText, 
+        journalEntryName: options.journalEntryName, 
+        originalTitle: options.originalTitle, 
+        globalContext: (options.html.find('.global-context')[0].value) ? game.settings.get('legend-lore','globalContext') : '',
+        originalContent: (options.html.find('.originating-content')[0].value) ? options.originalContent : '', 
+        journalEntryId: options.journalEntryId
+      }); // Call your existing handleGenerate function
+  });
+
+  $(options.html).find('#entry-template').on('change', function() {
     // Call a function to update the template preview
     console.log(this);
     if (this.value === "null" ) {
-      resetPreviewStyle("template-preview)");
+      resetPreviewStyle("template-preview");
     }
     else {
       updateTemplatePreview(this.value);
@@ -64,13 +145,11 @@ function dialogHelper(html, highlightedText, journalEntryName, originalTitle, or
 
 function resetPreviewStyle(previewName) {
   $(`.legend-lore.${previewName}`).empty();
-  $(`.legend-lore.${previewName}`).text("Select a template");
-  $(`.legend-lore.${previewName}`).removeAttr( 'style' );
-  $(`.legend-lore.${previewName}`).css ('height', '184px');
-  $(`.legend-lore.${previewName}`).css ('line-height', '184px');
-  $(`.legend-lore.${previewName}`).css ('text-align', 'center');
-  $(`.legend-lore.${previewName}`).css ('padding-left', '8px');
-  $(`.legend-lore.${previewName}`).css ('padding-right', '8px');
+  $(`.legend-lore.${previewName}`).html(`
+  <p>[Provide, with context to the original content, a brief introduction to the subject, including its basic definition, nature, and overall significance or relevance in the context it is being addressed.]</p>
+<h2>General Description</h2>
+<p>[Offer, with context to the original content, a general description of the subject, focusing on its key characteristics, features, or aspects. This section should lay the foundation for understanding the subject's uniqueness and importance.]</p>
+  `);
 }
 
 function updatePreviewStyle(previewName) {
@@ -109,7 +188,6 @@ async function populateJournalEntryTemplates() {
       for (const journalEntry of journalEntries) {
           // Get all pages from the Journal Entry
           const pages = await getJournalEntryPages(compendiumName, journalEntry.name);
-          console.log(pages);
           if (pages && pages.size > 0) {
               addPagesToDropdown(pages, journalEntry, dropdown);
           }
@@ -173,26 +251,52 @@ async function getJournalEntryPages(compendiumName, journalEntryName, pageName) 
   }
 }
 
-async function handleGenerate(html, highlightedText, journalEntryName, originalTitle, originalContent, journalEntryId) {
+async function handleGenerate(options = {
+  html, 
+  type,
+  highlightedText, 
+  journalEntryName, 
+  originalTitle, 
+  originalContent, 
+  globalContext,
+  journalEntryId
+}) {
     // Show the loading indicator and disable form elements while processing
-    $(".dialog-button.generate")[0].innerHTML=`<i class="fas fa-sparkle fa-spin"></i>Generating...`;
-    const formElements = html.find('input, textarea, button, a');
+    $(options.html).find(".dialog-button.generate")[0].innerHTML=`<i class="fas fa-sparkle fa-spin"></i> Generating...`;
+    const formElements = $(options.html).find('input, textarea, button, a');
     formElements.prop('disabled', true);
 
     // Extract the additional context value from the form
-    const additionalContext = $(".legend-lore.additional-context")[0].value;
-    const model = $(".legend-lore.gpt-model")[0].value;
+    const model = $(options.html).find(".legend-lore.gpt-model")[0].value;
     let templateContentJSON = ''
-    if ($(".entry-template").value != "null") {
-      templateContentJSON = ElementHandler.htmlToJson($('.legend-lore.template-preview')[0]);
-      console.log(templateContentJSON);
+    console.log($(options.html).find(".entry-template").value);
+    console.log("ENTRY TEMPLATE VALUE: " + $(options.html).find(".entry-template").value);
+    templateContentJSON = ElementHandler.htmlToJson($(options.html).find('.legend-lore.template-preview')[0]);
+    console.log(templateContentJSON);
+    let context, additionalContext, subject;
+    if(options.type === "context"){
+      subject = options.highlightedText;
+      context=ElementHandler.htmlToJson(options.originalContent.activeElement);
+      additionalContext = $(options.html).find(".legend-lore.context")[0].value;
+    } else if (options.type === "generate") {
+      subject = $(options.html).find(".legend-lore.entry-title")[0].value;
+      context=$(options.html).find(".legend-lore.context")[0].value;
     }
-    else {
-      templateContentJSON = '';
-    }
-    const originalContentJSON=ElementHandler.htmlToJson(originalContent.activeElement);
+    console.log("SUBJECT: " + subject);
     // Process the GPT request
-    let data = await processGPTRequest(highlightedText, journalEntryName, additionalContext, originalTitle, originalContentJSON, journalEntryId, templateContentJSON, model);
+    let data = await processGPTRequest({
+      type: options.type,
+      subject: subject, 
+      journalEntryName: options.journalEntryName, 
+      context: context, 
+      originalTitle: options.originalTitle, 
+      context: context, 
+      globalContext: context,
+      additionalContext: additionalContext,
+      journalEntryId: options.journalEntryId, 
+      templateContent: templateContentJSON, 
+      model
+    });
     const content = JSON.parse(data.apiResponseContent.choices[0].message.content.trim());
     console.log("CONTENT");
     console.log(content);
@@ -202,35 +306,45 @@ async function handleGenerate(html, highlightedText, journalEntryName, originalT
     // Try parsing the JSON string into an object and update UI
     try {
         let jsonObject = content;
+        console.log(content.output);
         const text = ElementHandler.jsonToHtml(content.output);
-        updateUIAfterResponse(html, text, data.apiResponseContent.usage);
+        console.log(text)
+        updateUIAfterResponse(options.html, text, data.apiResponseContent.usage);
     } catch (e) {
         console.error("Error parsing JSON:", e);
     }
 
     // Re-enable the form elements
     formElements.prop('disabled', false);
-    $(".dialog-button.generate")[0].innerHTML=`<i class="fas fa-wand-sparkles"></i>Generate`;
   }
 
 function updateUIAfterResponse(html, returnedContent, tokens) {
     // Update response content and token count
     updatePreviewStyle("generation-preview");
-    html.find('.legend-lore.generation-preview').html(returnedContent);
-    html.find('#token-count').html(`<strong>Tokens sent: ${tokens.prompt_tokens}, Tokens received: ${tokens.completion_tokens}, Total Tokens Used: ${tokens.total_tokens}</strong>`);
+    $(html).find('.legend-lore.generation-preview').html(returnedContent);
+    $(html).find('#token-count').html(`<strong>Tokens sent: ${tokens.prompt_tokens}, Tokens received: ${tokens.completion_tokens}, Total Tokens Used: ${tokens.total_tokens}</strong>`);
 
     // Show the response container
-    html.find('#response-container').show();
-
-    // Update button states
-    updateButtonStates(html);
+    $(html).find('#response-container').show();
+    $(html).find(".dialog-button.generate")[0].innerHTML=`<i class="fas fa-sparkle"></i> Generate`;
+    // Update button statesconsole.log($(document).find(".dialog-button.generate"));
 }
 
-function updateButtonStates(html) {
-    // Change 'Generate' to 'Regenerate' and show 'Accept' button
-    html.find("#generate-btn").text("Regenerate");
-    html.find("#accept-btn").show();
+async function populateJournalDropdown(selectedJournalEntryId = null) {
+  const dropdown = document.querySelector('.journal-entry-dropdown');
+  console.log(selectedJournalEntryId);
+  // Clear existing options
+  dropdown.innerHTML = '';
 
-    // Style the buttons to be horizontal if needed
-    // html.find('.dialog-buttons').css('display', 'flex');
+  // Get all journal entries
+  const journalEntries = game.journal.map(entry => ({ id: entry.id, name: entry.name }));
+  for (const entry of journalEntries) {
+      console.log(entry.id);
+      let option = document.createElement("option");
+      option.value = entry.id;
+      option.textContent = entry.name;
+      console.log(option);
+      option.selected = entry.id === selectedJournalEntryId;
+      dropdown.appendChild(option);
+  }
 }

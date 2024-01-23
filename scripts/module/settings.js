@@ -35,14 +35,22 @@ export function registerSettings() {
         type: JournalEntrySelectionApplication,
         restricted: true
       });
-      
+      game.settings.register('legend-lore', 'globalContext', {
+        scope: 'world',
+        label: "Global Context",
+        hint: "Context that will be considered when generating content.",
+        config: true,
+        type: String,
+        default: ''
+      });
+
       game.settings.register('legend-lore', 'journalEntryTemplates', {
         scope: 'world',
         config: false,
         type: Object,
         default: ["journal-entry-templates"]
       });
-  
+
       
     //updateModelDropdown();
 }

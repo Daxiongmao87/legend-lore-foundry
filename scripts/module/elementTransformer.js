@@ -1,17 +1,14 @@
 export class ElementHandler {
     static htmlToJson(element) {
-        // Convert an HTML element to a JSON representation
         let json = {
-            tagName: element.tagName.toLowerCase(),
-            //attributes: ElementHandler.getElementAttributes(element),
-            content: '' // Initialize content as empty string
+            tagName: element.tagName.toLowerCase()
         };
-
+    
         let children = [];
         for (let node of element.childNodes) {
-            if (node.nodeType === Node.TEXT_NODE) {
-                // Append text content from text nodes only
-                json.content += node.nodeValue.trim();
+            if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length > 0) {
+                // Include text nodes as distinct children
+                children.push({ type: 'text', content: node.nodeValue.trim() });
             } else if (node.nodeType === Node.ELEMENT_NODE) {
                 // Recursively process child elements
                 children.push(ElementHandler.htmlToJson(node));
@@ -25,19 +22,24 @@ export class ElementHandler {
     }
 
     static jsonToHtml(jsonObject) {
-        // Create an HTML element from a JSON object
         const element = document.createElement(jsonObject.tagName);
-        //ElementHandler.setElementAttributes(element, jsonObject.attributes);
+        
         if (jsonObject.children) {
             for (let childJson of jsonObject.children) {
-                let childElement = ElementHandler.jsonToHtml(childJson);
-                element.appendChild(childElement);
+                if (childJson.type === 'text') {
+                    // Create text node for text type children
+                    let textNode = document.createTextNode(childJson.content);
+                    element.appendChild(textNode);
+                } else {
+                    // Recursively process nested elements
+                    let childElement = ElementHandler.jsonToHtml(childJson);
+                    element.appendChild(childElement);
+                }
             }
-        } else {
-            element.textContent = jsonObject.content || '';
         }
         return element;
     }
+    
 
     static getElementAttributes(element) {
         let attributes = {};

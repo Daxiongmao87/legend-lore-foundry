@@ -1,4 +1,4 @@
-import { openContextDialog } from './uiHelpers.js';
+import { openDialog } from './uiHelpers.js';
 Hooks.once('ready', () => {
     const originalBuild = window.ProseMirror.ProseMirrorHighlightMatchesPlugin.build;
 
@@ -34,6 +34,7 @@ Hooks.once('ready', () => {
                     // Continue with the original update logic and see if it creates a tooltip.
                     await originalUpdate(view, lastState);
                     if (view.state.selection.content().size > 0){
+                        console.log(view.state.selection);
                         //const highlightedText = view.state.selection.content().content.textBetween(0, view.state.selection.content().size);
                         const { from, to } = view.state.selection;
                         const highlightedText = view.state.doc.textBetween(from, to);
@@ -61,10 +62,18 @@ Hooks.once('ready', () => {
                     
                     window.generateEntryForText = function(highlightedText, journalEntryId) {
                         console.log(`legend-lore | Preparing to generate entry for: ${highlightedText}`);
-                        let originalContent = new DOMParser().parseFromString(editorView.dom.closest('.journal-page-content').innerHTML.replace(/<([a-z][a-z0-9]*)[^>]*?(\/?)>/gi, '<$1$2>'), 'text/xml');
-                        let originalTitle = editorView.dom.closest('.editable.flexcol').querySelector('.journal-header').querySelector('.title').value;
+                        console.log(editorView.dom);
+                        console.log(editorView.dom.outerHTML.replace(/<([a-z][a-z0-9]*)[^>]*?(\/?)>/gi, '<$1$2>'));
+                        let originalContent = new DOMParser().parseFromString(editorView.dom.outerHTML.replace(/<([a-z][a-z0-9]*)[^>]*?(\/?)>/gi, '<$1$2>'), 'text/xml');
+                        let originalTitle = $(editorView.dom).closest('.editable.flexcol').find('[name="name"').value;
                         // Pass only the highlighted text and journal entry ID
-                        openContextDialog(highlightedText, journalEntryId, originalTitle, originalContent);
+                        openDialog({
+                            type: "context",
+                            highlightedText: highlightedText, 
+                            journalEntryId: journalEntryId, 
+                            originalTitle: originalTitle, 
+                            originalContent: originalContent
+                        });
                     };
                     // Check if the original update method resulted in an active tooltip.
                     if (this.tooltip) {

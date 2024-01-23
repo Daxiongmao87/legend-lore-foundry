@@ -1,10 +1,22 @@
 {
-  "title": "Legend Lore",
-  "description": "A module with the goal of leveraging Open AI's GPT to generate many things within FoundryVTT for your fantasy world.",
-  "version": "0.0.1",
-  "url": "https://github.com/Daxiongmao87/legend-lore-foundry",
-  "manifest": "https://github.com/Daxiongmao87/legend-lore-foundry/releases/download/0.0.1/module.json",
-  "download": "https://github.com/Daxiongmao87/legend-lore-foundry/archive/refs/tags/0.0.1.zip",
+  "title": "Legend Lor",
+  "description": "A GPT powered journal content generator.",
+  "version": "0.2.1",
+  "relationships": {
+    "systems": [
+      {
+        "id": "dnd5e",
+        "type": "system",
+        "compatibility": {
+          "minimum": "2.3.0",
+          "verified": "2.3.1"
+        }
+      }
+    ]
+  },
+  "url": "https://github.com/Daxiongmao87/legend-lore",
+  "manifest": "https://github.com/Daxiongmao87/legend-lore/releases/download/0.2.0/module.json",
+  "download": "https://github.com/Daxiongmao87/legend-lore/archive/refs/tags/0.2.0.zip",
   "esmodules": [
     "scripts/main.js"
   ],
@@ -15,8 +27,17 @@
     {
       "name": "journal-entry-templates",
       "label": "Journal Entry Templates",
+      "system": "dnd5e",
       "path": "./packs/compendiums/templates",
       "type": "Journal Entry"
+    }
+  ],
+  "packFolders": [
+    {
+      "name": "Legend Lor",
+      "sorting": "a",
+      "packs": ["templates"],
+      "color": "#f5cf07"
     }
   ],
   "id": "legend-lore",

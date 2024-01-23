@@ -1,6 +1,19 @@
 // Functions related to managing journal entries
-export async function createNewJournalEntryPage(journalEntryId, pageName, highlightedText, originalContent, pageContent) {
+export async function createNewJournalEntryPage(options = {
+  type,
+  journalEntryId, 
+  pageName, 
+  highlightedText, 
+  originalContent, 
+  pageContent
+  }) {
     // Fetch the existing JournalEntry to which the new page will be added
+    const type = options.type;
+    const journalEntryId = options.journalEntryId;
+    const pageName = options.pageName;
+    const highlightedText = options.highlightedText;
+    const originalContent = options.originalContent;
+    const pageContent = options.pageContent;
     let journalEntry = game.journal.get(journalEntryId);
     if (!journalEntry) {
       console.error(`Could not find JournalEntry with ID: ${journalEntryId}`);

@@ -57,43 +57,55 @@ async function callOpenAI(preprompt, contextPrompt, model) {
 
 // Other API related functions...
 // Function to handle GPT request using OpenAI's API
-export async function processGPTRequest(highlightedText, journalEntryName, additionalContext, originalTitle, originalContent, journalEntryId, templateContent, model) {
+export async function processGPTRequest(options = {
+  type,
+  subject, 
+  journalEntryName,  
+  originalTitle, 
+  context, 
+  additionalContext,
+  journalEntryId, 
+  templateContent,
+  globalContext,
+  model
+}) {
     const preprompt = `You are a TTRPG content generator.`
-    console.log(templateContent);
-    console.log(JSON.stringify(templateContent));
-    let prompt = `Generate a fully-detailed and RICH TTRPG entry for "${journalEntryName}" from within "${originalTitle}" on the following subject: "${highlightedText}".  Expand on "${journalEntryName}" in granular detail and introduce new subjects within the context of "${originalTitle}".  Here is more context on "${highlightedText}" below:
-    CONTEXT
-    ---
-    ${JSON.stringify(originalContent)}
-    ---
-    `
-    if ( additionalContext != '') {
-      prompt = prompt + `
-    ADDITIONAL CONSIDERATIONS:
-    ${additionalContext}
-    ---`
+    console.log(options);
+    console.log(JSON.stringify(options.templateContent));
+    
+    let prompt = `Generate a fully-detailed and RICH TTRPG entry for "${options.journalEntryName}" from within "${options.originalTitle}" on the following subject: "${options.subject}".  Expand on "${options.journalEntryName}" in granular detail and introduce new subjects within the context of "${options.originalTitle}".  `
+    if(options.context) {
+      prompt = prompt + `Here is more context on "${options.subject}" below:
+      CONTEXT
+      ---
+      ${JSON.stringify(options.context)}
+      ---
+      `
     }
-    if ( templateContent != '') {
+    if ( options.additionalContext || options.globalContext) {
       prompt = prompt + `
-      ADHERE TO THE FOLLOWING JSON TEMPLATE:
-      \`\`\`
-      ${JSON.stringify(templateContent)}
-      \`\`\`
+      ADDITIONAL CONSIDERATIONS:`
+      if (options.additionalContext) prompt = prompt + `
+      ${options.additionalContext}
+      ---`
+      if (options.globalContext) prompt = prompt + `
+      ${options.globalContext}
       ---`
     }
     prompt = prompt + `
-    Output in JSON in the following format:
+    ADHERE TO THE FOLLOWING JSON TEMPLATE:
     '{
-    "precedent_subjects": "<Comprehensive Comma-Separated List of Existing Subjects with Precedent EXCLUSIVELY related to ${highlightedText}>", 
-    "new_subjects": "<Comprehensive Comma-Separated List of Newly Generated, UNPRECEDENTED DISTINCT Subjects EXCLUSIVELY related to ${highlightedText}, using PROPER NOUNS>", 
-    "subject_expansion": "array detailing each identified precedent_subject and new_subject, ONLY IF RELATED TO ${highlightedText}, in an effort to provide RICH content.",
-    "output": <Nested JSON section adhering to the structure given in the TEMPLATE of the RICH new content. This section must contain subjects in both precedent_subjects and new_subjects in granular detail, providing a RICH Amount of information.  Use the subject_expansion section to flesh out the information in this JSON section.  Expand further for more rich and engaging content.>" 
+    "precedent_subjects": "<Comprehensive Comma-Separated List of Existing Subjects with Precedent EXCLUSIVELY related to ${options.subject}>", 
+    "new_subjects": "<Comprehensive Comma-Separated List of Newly Generated, UNPRECEDENTED DISTINCT Subjects EXCLUSIVELY related to ${options.subject}, using PROPER NOUNS>", 
+    "subject_expansion": "array detailing each identified precedent_subject and new_subject, ONLY IF RELATED TO ${options.subject}, in an effort to provide RICH content.",
+    "output": ${JSON.stringify(options.templateContent)
+      }" 
     }'
 
-    Emulate and adhere to the formatting and writing style of the CONTEXT provided. All new content must be DIRECTLY related to "${highlightedText}."`;
+    Emulate and adhere to the formatting and writing style of the CONTEXT provided. All new content must be DIRECTLY related to "${options.subject}."`;
     console.log(prompt);
-    // Call the OpenAI API passing the preprompt and the highlightedText (prompt part)
-    const apiResponseContent = await callOpenAI(preprompt, prompt, model);
+    // Call the OpenAI API passing the preprompt and the subject (prompt part)
+    const apiResponseContent = await callOpenAI(preprompt, prompt, options.model);
     //const apiResponseContent="test";
     if (!apiResponseContent) {
       ui.notifications.error('Failed to get a response from OpenAI.');
@@ -103,12 +115,11 @@ export async function processGPTRequest(highlightedText, journalEntryName, addit
     // Use the received content as the body for the new journal entry page
     console.log(apiResponseContent);
     return { 
-        journalEntryId: journalEntryId, 
-        highlightedText: highlightedText, 
-        originalContent: originalContent, 
+        journalEntryId: options.journalEntryId, 
+        subject: options.subject, 
+        originalContent: options.context, 
         apiResponseContent: apiResponseContent
     };
-    //await createNewJournalEntryPage(journalEntryId, highlightedText, originalContent, apiResponseContent);
   }
 
   
