@@ -2,18 +2,6 @@
   "title": "Legend Lore",
   "description": "A GPT powered journal content generator.",
   "version": "0.2.1",
-  "relationships": {
-    "systems": [
-      {
-        "id": "dnd5e",
-        "type": "system",
-        "compatibility": {
-          "minimum": "2.3.0",
-          "verified": "2.3.1"
-        }
-      }
-    ]
-  },
   "url": "https://github.com/Daxiongmao87/legend-lore",
   "manifest": "https://github.com/Daxiongmao87/legend-lore/releases/download/version/module.json",
   "download": "https://github.com/Daxiongmao87/legend-lore/archive/refs/tags/version.zip",
@@ -27,7 +15,6 @@
     {
       "name": "journal-entry-templates",
       "label": "Journal Entry Templates",
-      "system": "dnd5e",
       "path": "./packs/compendiums/templates.db",
       "type": "JournalEntry"
     }
@@ -37,7 +24,7 @@
       "name": "Legend Lore",
       "sorting": "a",
       "packs": ["journal-entry-templates"],
-      "color": "#f5cf07"
+      "color": "#ba9d00"
     }
   ],
   "id": "legend-lore",
