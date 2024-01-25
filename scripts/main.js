@@ -4,7 +4,6 @@ import './module/api.js';
 import './module/uiHelpers.js';
 import './module/journalManager.js';
 import './module/utils.js';
-import './module/aiJournalSheet.js';
 
 /**
  * Initializes the Legend Lore module. This function sets up a hook that is
