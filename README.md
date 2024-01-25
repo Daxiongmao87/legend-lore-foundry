@@ -31,8 +31,8 @@ After installing the module, navigate to the module settings in Foundry VTT to e
 
 With the module enabled, you can use the provided UI tools and extensions within Foundry VTT to generate and manage AI-assisted content. The module integrates directly with the journal system and other Foundry VTT features, offering a seamless and enriching gameplay experience.
 
-[badge_version]: https://img.shields.io/github/v/tag/legend-lore-foundry/legend-lore?label=Version&style=flat-square&color=2577a1
-[badge_issues]: https://img.shields.io/github/issues/legend-lore-foundry/legend-lore?style=flat-square
-[badge_downloads]: https://img.shields.io/github/downloads/legend-lore-foundry/legend-lore/total
+[badge_version]: https://img.shields.io/github/v/tag/daxiongmao87/legend-lore-foundry?label=Version&style=flat-square&color=2577a1
+[badge_issues]: https://img.shields.io/github/issues/daxiongmao87/legend-lore-foundry?style=flat-square
+[badge_downloads]: https://img.shields.io/github/downloads/daxiongmao87/legend-lore-foundry/total
 
 [badge_fvtt_versions]: https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://github.com/legend-lore-foundry/legend-lore/releases/latest/download/module.json&style=flat-square&color=ff6400
