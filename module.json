@@ -16,7 +16,7 @@
   },
   "url": "https://github.com/Daxiongmao87/legend-lore",
   "manifest": "https://github.com/Daxiongmao87/legend-lore/releases/download/version/module.json",
-  "download": "https://github.com/Daxiongmao87/legend-lore/archive/refs/tags/versiom.zip",
+  "download": "https://github.com/Daxiongmao87/legend-lore/archive/refs/tags/version.zip",
   "esmodules": [
     "scripts/main.js"
   ],
