@@ -36,7 +36,7 @@
     {
       "name": "Legend Lore",
       "sorting": "a",
-      "packs": ["templates"],
+      "packs": ["journal-entry-templates"],
       "color": "#f5cf07"
     }
   ],
