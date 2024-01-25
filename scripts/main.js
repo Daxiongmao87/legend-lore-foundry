@@ -3,6 +3,7 @@ import './module/prosemirrorPlugin.js';
 import './module/api.js';
 import './module/uiHelpers.js';
 import './module/journalManager.js';
+import './module/aiJournalSheet.js';
 import './module/utils.js';
 /**
  * Initializes the Legend Lore module. This function sets up a hook that is
