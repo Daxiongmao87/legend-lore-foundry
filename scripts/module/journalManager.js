@@ -1,4 +1,4 @@
-
+import { log } from './utils.js';
 /**
  * Creates a new journal entry page in Foundry VTT.
  * @param {Object} options - Options for the new journal entry page.

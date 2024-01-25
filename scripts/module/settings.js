@@ -1,3 +1,4 @@
+import { log } from './utils.js';
 /**
  * @constant {number} MAX_TOKENS Maximum number of tokens that can be sent in a single request to the OpenAI API.
  */
@@ -53,12 +54,11 @@ export function registerSettings() {
     });
       game.settings.register('legend-lore', 'journalEntryTemplates', {
         scope: 'world',
-        name: '
         config: false,
         type: Object,
         default: ["journal-entry-templates"]
     });
-    logInfo({message: "Game settings registered successfully."});
+    log({message: "Game settings registered successfully."});
 }
 /**
  * @class

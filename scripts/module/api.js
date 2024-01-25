@@ -1,5 +1,6 @@
 import { BASE_URL, MAX_TOKENS } from './settings.js';
 import { createNewJournalEntryPage } from './journalManager.js'
+import { log } from './utils.js';
 /**
  * Makes an API call to OpenAI with the given prompts and model.
  * @param {string} preprompt - The preprompt text providing context or instructions.

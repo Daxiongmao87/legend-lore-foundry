@@ -1,7 +1,7 @@
 import { processGPTRequest } from "./api.js";
 import { createNewJournalEntryPage } from "./journalManager.js";
 import { ElementHandler } from './elementTransformer.js';
-
+import { log } from './utils.js';
 /**
  * Opens a dialog in the Foundry VTT UI based on the provided options. This dialog is used for user interactions related to AI content generation.
  * @param {Object} options - The options for the dialog.

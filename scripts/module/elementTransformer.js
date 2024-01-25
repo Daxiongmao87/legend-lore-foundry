@@ -1,3 +1,4 @@
+import { log } from './utils.js';
 /**
  * A utility class for handling HTML elements, providing functionalities to convert
  * between HTML elements and JSON representation, and to manipulate element attributes.
