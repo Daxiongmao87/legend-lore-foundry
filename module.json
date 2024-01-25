@@ -29,7 +29,7 @@
       "label": "Journal Entry Templates",
       "system": "dnd5e",
       "path": "./packs/compendiums/templates.db",
-      "type": "Journal Entry"
+      "type": "JournalEntry"
     }
   ],
   "packFolders": [
