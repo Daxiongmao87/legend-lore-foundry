@@ -1,10 +1,10 @@
 {
   "title": "Legend Lore",
   "description": "A GPT powered journal content generator.",
-  "version": "0.2.1",
+  "version": "v0.3.0",
   "url": "https://github.com/Daxiongmao87/legend-lore",
-  "manifest": "https://github.com/Daxiongmao87/legend-lore/releases/download/version/module.json",
-  "download": "https://github.com/Daxiongmao87/legend-lore/archive/refs/tags/version.zip",
+  "manifest": "https://github.com/Daxiongmao87/legend-lore-foundry/releases/download/v0.3.0/module.json",
+  "download": "https://github.com/Daxiongmao87/legend-lore-foundry/releases/download/v0.3.0/module.zip",
   "esmodules": [
     "scripts/main.js"
   ],
@@ -23,7 +23,9 @@
     {
       "name": "Legend Lore",
       "sorting": "a",
-      "packs": ["journal-entry-templates"],
+      "packs": [
+        "journal-entry-templates"
+      ],
       "color": "#ba9d00"
     }
   ],
