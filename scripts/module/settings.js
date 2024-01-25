@@ -56,7 +56,7 @@ export function registerSettings() {
         scope: 'world',
         config: false,
         type: Object,
-        default: ["journal-entry-templates"]
+        default: ["legend-lore.journal-entry-templates"]
     });
     log({message: "Game settings registered successfully."});
 }
