@@ -1,6 +1,15 @@
-// Register game settings
-export const max_tokens=4096;
-export const base_url='https://api.openai.com/v1/chat/completions';
+/**
+ * @constant {number} MAX_TOKENS Maximum number of tokens that can be sent in a single request to the OpenAI API.
+ */
+export const MAX_TOKENS = 4096;
+/**
+ * @constant {string} BASE_URL Base URL for the OpenAI API.
+ */
+export const BASE_URL = 'https://api.openai.com/v1/chat/completions';
+/**
+ * Registers the module's settings in Foundry VTT. It includes settings for the OpenAI API key,
+ * available models, temperature settings, journal entry templates, and global context.
+ */
 export function registerSettings() {
     game.settings.register('legend-lore', 'openaiApiKey', {
         name: "OpenAI API Key",
@@ -16,7 +25,7 @@ export function registerSettings() {
         scope: 'world',
         config: true,
         type: String,
-        default: "gpt-3.5-turbo-1106 gpt-4-1106-preview" // or set a default model if desired
+        default: "gpt-3.5-turbo-1106 gpt-4-1106-preview" 
     });
     game.settings.register('legend-lore', 'temperature', {
         name: "Temperature",
@@ -26,7 +35,6 @@ export function registerSettings() {
         type: Number,
         default: "0.3"
     });
-    // Register the settings menu
     game.settings.registerMenu("legend-lore", "templateSettingMenu", {
         name: "Journal Entry Templates",
         label: "Select Templates", 
@@ -34,33 +42,42 @@ export function registerSettings() {
         icon: "fas fa-bars",
         type: JournalEntrySelectionApplication,
         restricted: true
-      });
-      game.settings.register('legend-lore', 'globalContext', {
+    });
+    game.settings.register('legend-lore', 'globalContext', {
         scope: 'world',
         label: "Global Context",
         hint: "Context that will be considered when generating content.",
         config: true,
         type: String,
         default: ''
-      });
-
+    });
       game.settings.register('legend-lore', 'journalEntryTemplates', {
         scope: 'world',
         config: false,
         type: Object,
         default: ["journal-entry-templates"]
-      });
-
-      
-    //updateModelDropdown();
+    });
+    logInfo({message: "Game settings registered successfully."});
 }
-
+/**
+ * @class
+ * @classdesc A form application for selecting journal entry templates in Foundry VTT.
+ * Provides functionality to select and manage journal entries from compendiums.
+ */
 class JournalEntrySelectionApplication extends FormApplication {
+    /**
+     * Constructs a new JournalEntrySelectionApplication instance.
+     * Initializes journalEntries with the available JournalEntry compendiums.
+     * @param {...*} args - Arguments passed to the FormApplication constructor.
+     */
     constructor(...args) {
       super(...args);
       this.journalEntries = this._getJournalEntryCompendiums();
     }
-  
+    /**
+     * Defines the default options for the JournalEntrySelectionApplication.
+     * @returns {Object} The default options for this application.
+     */
     static get defaultOptions() {
       return mergeObject(super.defaultOptions, {
         id: "journal-entry-selection",
@@ -72,7 +89,10 @@ class JournalEntrySelectionApplication extends FormApplication {
         resizable: true
       });
     }
-  
+    /**
+     * Prepares data for rendering the template. This includes the current selection of journal entries.
+     * @returns {Object} Data to be used in rendering the template.
+     */
     getData() {
         const selectedIds = new Set(game.settings.get('legend-lore', 'journalEntryTemplates'));
         return {
@@ -82,20 +102,25 @@ class JournalEntrySelectionApplication extends FormApplication {
             }))
         };
     }
-
+    /**
+     * Updates the journal entry selections based on form data.
+     * @param {Event} event - The DOM event that triggered the update.
+     * @param {Object} formData - The form data from the application's HTML form.
+     */
     async _updateObject(event, formData) {
         const selectedEntries = Object.entries(formData)
             .filter(([key, value]) => value)
-            .map(([key]) => key); // key is now the id
+            .map(([key]) => key); 
         await game.settings.set('legend-lore', 'journalEntryTemplates', selectedEntries);
     }
-
+    /**
+     * Activates interactive listeners for the application's HTML, such as input filters.
+     * @param {JQuery} html - The jQuery object representing the HTML of the app.
+     */
     activateListeners(html) {
         super.activateListeners(html);
-    
         const filterInput = html.find("#filter-input");
         const entryContainer = html.find("#journal-entries-container");
-    
         filterInput.on("keyup", event => {
             const searchTerm = event.target.value.toLowerCase();
             entryContainer.find(".checkbox").each(function() {
@@ -105,8 +130,10 @@ class JournalEntrySelectionApplication extends FormApplication {
             });
         });
     }
-    
-  
+    /**
+     * Retrieves a list of JournalEntry compendiums available in the game.
+     * @returns {Array} An array of objects, each representing a journal entry compendium.
+     */
     _getJournalEntryCompendiums() {
         const packs = Array.from(game.packs);
         return packs
@@ -119,95 +146,12 @@ class JournalEntrySelectionApplication extends FormApplication {
             }));
     }
   }
-  
-
-async function updateModelDropdown(html) {
-    return new Promise(async (resolve, reject) => {
-        const apiKey = game.settings.get('legend-lore', 'openaiApiKey');
-        if (!apiKey) {
-            game.settings.register('legend-lore', 'model', {
-              name: "Model",
-              hint: "Please enter a valid API Key.",
-              scope: 'world',
-              config: true,
-              type: String,
-              choices: {},
-              default: "None"
-            });
-            resolve();
-            return;
-        }
-
-        try {
-            const response = await fetch('https://api.openai.com/v1/models', {
-                headers: { 'Authorization': `Bearer ${apiKey}` }
-            });
-            const data = await response.json();
-            const models = data.data
-                .filter(model => model.id.includes('gpt'))
-                .reduce((choices, model) => {
-                    choices[model.id] = model.id;
-                    return choices;
-                }, {});
-            const defaultModel=(game.settings.get('legend-lore', 'model')) ? game.settings.get('legend-lore', 'model') : "gpt-3.5-turbo"
-            await game.settings.register('legend-lore', 'model', {
-                name: "Model",
-                hint: "Select a model. For pricing information, see [OpenAI Pricing Link].",
-                scope: 'world',
-                config: true,
-                type: String,
-                choices: models,
-                default: defaultModel // or set a default model if desired
-            });
-            if (html) {
-              html.find('[data-setting-id="legend-lore.model"]').find('[class="notes"]')[0].innerHTML = 'Select a model. For pricing information, see <a href="https://openai.com/pricing" target="_blank">OpenAI Pricing</a>.'
-              let dropdown = html.find('[name="legend-lore.model"]');
-              $.each(models, function(model) {
-                dropdown.append($("<option></option>")
-                  .attr("value", model)
-                  .text(model));
-              });
-              dropdown.val(defaultModel).change();
-            }
-            resolve();
-
-        } catch (error) {
-            console.error('Error fetching models:', error);
-            reject(error);
-        }
-    });
-}
-
-function getJournalEntryCompendiums() {
-    const packs = Array.from(game.packs);
-    let journalEntryPacks = [];
-    for (let i = 0; i < packs.length; i++) {
-    if(packs[i].metadata.type == "JournalEntry") {
-        journalEntryPacks.push(packs[i].metadata);
-    }
-    }
-    return journalEntryPacks;
-}
-
-function handleApiKeyInput(html) {
-    const apiKeyInput = html.find('[name="legend-lore.openaiApiKey"]');
-    html.find('[data-setting-id="legend-lore.model"]').find('[class="notes"]')[0].innerHTML = 'Select a model. For pricing information, see <a href="https://openai.com/pricing" target="_blank">OpenAI Pricing</a>.';
-
-    let debouncedApiKeyChange = debounce(updateModelDropdown, 1000);
-
-    // Only proceed if the input exists and does not have the listener attached.
-    if (apiKeyInput.length > 0 && !apiKeyInput.data('listener-attached')) {
-        apiKeyInput.on('input', (event) => {
-            let newValue = event.target.value;
-            game.settings.set('legend-lore', 'openaiApiKey', newValue);
-            debouncedApiKeyChange(html);
-            console.log('OpenAI API Key changed:', newValue);
-        });
-
-        apiKeyInput.data('listener-attached', true);
-    }
-}
-
+/**
+ * Hook for modifying the OpenAI API key input field in the Foundry VTT package configuration UI.
+ * @param {Application} app - The application instance.
+ * @param {JQuery} html - The jQuery object representing the HTML of the app.
+ * @param {Object} data - Data provided to the template.
+ */
 Hooks.on('renderPackageConfiguration', (app, html, data) => {
     let apiKeyInput = $('[name="legend-lore.openaiApiKey"]')[0];
     if (apiKeyInput) {
@@ -215,7 +159,10 @@ Hooks.on('renderPackageConfiguration', (app, html, data) => {
         apiKeyInput.autocomplete = 'one-time-code';
     }
 });
-
+/**
+ * Hook for Foundry VTT's 'ready' event. It calls the registerSettings function to initialize
+ * the module's settings when Foundry VTT is ready.
+ */
 Hooks.once('ready', () => {
     registerSettings();
 });

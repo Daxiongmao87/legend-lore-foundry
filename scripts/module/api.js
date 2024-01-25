@@ -1,62 +1,79 @@
-import { base_url, max_tokens } from './settings.js';
+import { BASE_URL, MAX_TOKENS } from './settings.js';
 import { createNewJournalEntryPage } from './journalManager.js'
+/**
+ * Makes an API call to OpenAI with the given prompts and model.
+ * @param {string} preprompt - The preprompt text providing context or instructions.
+ * @param {string} contextPrompt - The user's prompt or query.
+ * @param {string} model - The model to use for the OpenAI API call.
+ * @returns {Promise<Object|null>} A promise that resolves to the response from the OpenAI API or null in case of failure.
+ */
 async function callOpenAI(preprompt, contextPrompt, model) {
-    // Construct the full prompt
     const fullPrompt = `${preprompt}\n\n${contextPrompt}`;
-
-    // Fetch the apiKey directly within the function to ensure it's always current
     const apiKey = game.settings.get('legend-lore', 'openaiApiKey');
     if (!apiKey) {
-      console.error("OpenAI API key is not set in the legend-lore module settings.");
+      log({
+        message: "OpenAI API key is not set in the Legend Lore module settings.", 
+        display: ["ui", "console"], 
+        type: ["error"]});
       return null;
     }
-
-    // requestOptions is now inside the function, using the apiKey fetched from settings
     const requestOptions = {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`, // Use the apiKey directly from settings
+        'Authorization': `Bearer ${apiKey}`, 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: model, // Replace with your model of choice
+        model: model, 
         messages: [
           {
             role: "system",
-            content: preprompt  // Your preprompt text that provides context or instructions
+            content: preprompt  
           },
           {
             role: "user",
-            content: contextPrompt  // The actual user's prompt or query
+            content: contextPrompt  
           }
-          // Include additional message objects if you have more conversation context.
         ],
-        temperature: game.settings.get('legend-lore', 'temperature'), // Adjust as necessary
-        max_tokens: max_tokens, // Adjust as necessary
-        response_format: { type: "json_object" }, // Enable JSON mode to ensure the model outputs valid JSON
-// Add any other parameters you wish to include in the request
-        // Additional parameters...
+        temperature: game.settings.get('legend-lore', 'temperature'), 
+        MAX_TOKENS: MAX_TOKENS, 
+        response_format: { type: "json_object" }, 
+
       }),
     };
-
-    // Send the request to the OpenAI API
     try {
-      const response = await fetch(`${base_url}`, requestOptions);
+      const response = await fetch(`${BASE_URL}`, requestOptions);
       if (!response.ok) {
-        console.error('OpenAI API error:', response.statusText);
+        throw new Error(response.statusText);
         return null;
       }
-
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Error calling OpenAI API:', error);
+      log({
+        message: 'Error in OpenAI API request.', 
+        error: error,
+        display: ["ui", "console"],
+        type: ["error"]
+      });
       return null;
     }
   }
-
-// Other API related functions...
-// Function to handle GPT request using OpenAI's API
+/**
+ * Processes a request to generate content using GPT (Generative Pre-trained Transformer) model.
+ * @param {Object} options - The options for the GPT request.
+ * @param {string} options.type - The type of request.
+ * @param {string} options.subject - The subject for content generation.
+ * @param {string} options.journalEntryName - The name of the journal entry.
+ * @param {string} options.originalTitle - The original title of the content.
+ * @param {string} options.context - The context for content generation.
+ * @param {string} options.additionalContext - Additional context information.
+ * @param {string} options.journalEntryId - The ID of the journal entry.
+ * @param {string} options.templateContent - The content of the template used.
+ * @param {string} options.globalContext - The global context considered for generation.
+ * @param {string} options.model - The model used for the OpenAI API call.
+ * @returns {Promise<Object>} A promise that resolves to the processed content.
+ */
 export async function processGPTRequest(options = {
   type,
   subject, 
@@ -70,9 +87,8 @@ export async function processGPTRequest(options = {
   model
 }) {
     const preprompt = `You are a TTRPG content generator.`
-    console.log(options);
-    console.log(JSON.stringify(options.templateContent));
-    
+    (options);
+    (JSON.stringify(options.templateContent));
     let prompt = `Generate a fully-detailed and RICH TTRPG entry for "${options.journalEntryName}" from within "${options.originalTitle}" on the following subject: "${options.subject}".  Expand on "${options.journalEntryName}" in granular detail and introduce new subjects within the context of "${options.originalTitle}".  `
     if(options.context) {
       prompt = prompt + `Here is more context on "${options.subject}" below:
@@ -101,19 +117,14 @@ export async function processGPTRequest(options = {
     "output": ${JSON.stringify(options.templateContent)
       }" 
     }'
-
     Emulate and adhere to the formatting and writing style of the CONTEXT provided. All new content must be DIRECTLY related to "${options.subject}."`;
-    console.log(prompt);
-    // Call the OpenAI API passing the preprompt and the subject (prompt part)
+    (prompt);
     const apiResponseContent = await callOpenAI(preprompt, prompt, options.model);
-    //const apiResponseContent="test";
     if (!apiResponseContent) {
       ui.notifications.error('Failed to get a response from OpenAI.');
       return;
     }
-
-    // Use the received content as the body for the new journal entry page
-    console.log(apiResponseContent);
+    (apiResponseContent);
     return { 
         journalEntryId: options.journalEntryId, 
         subject: options.subject, 
@@ -121,5 +132,4 @@ export async function processGPTRequest(options = {
         apiResponseContent: apiResponseContent
     };
   }
-
   

@@ -1,4 +1,15 @@
-// Functions related to managing journal entries
+
+/**
+ * Creates a new journal entry page in Foundry VTT.
+ * @param {Object} options - Options for the new journal entry page.
+ * @param {string} options.type - The type of the journal entry.
+ * @param {string} options.journalEntryId - The ID of the journal entry.
+ * @param {string} [options.pageName] - The name of the new journal page.
+ * @param {string} [options.highlightedText] - Text highlighted by the user for the journal entry.
+ * @param {Object} [options.originalContent] - The original content of the journal entry.
+ * @param {string} [options.pageContent] - The content of the new journal page.
+ * @returns {Promise<Object|null>} A promise that resolves to the newly created journal entry page or null in case of failure.
+ */
 export async function createNewJournalEntryPage(options = {
   type,
   journalEntryId, 
@@ -7,7 +18,6 @@ export async function createNewJournalEntryPage(options = {
   originalContent, 
   pageContent
   }) {
-    // Fetch the existing JournalEntry to which the new page will be added
     const type = options.type;
     const journalEntryId = options.journalEntryId;
     const pageName = options.pageName;
@@ -16,91 +26,75 @@ export async function createNewJournalEntryPage(options = {
     const pageContent = options.pageContent;
     let journalEntry = game.journal.get(journalEntryId);
     if (!journalEntry) {
-      console.error(`Could not find JournalEntry with ID: ${journalEntryId}`);
+      log({
+        message: `Could not find JournalEntry with ID: ${journalEntryId}`,
+        display: ["console", "ui"],
+        type: ["error"]
+    });
       return;
     }
-
-    // Determine the sort order for the new page
-    // Use the JournalEntry's pages and getNextSortOrder() if available, or default back to a manual calculation
     let sortValue;
     if (typeof journalEntry.getNextSortOrder === "function") {
-      // If Foundry provides a helper function to get the next sort value, use it
       sortValue = journalEntry.getNextSortOrder();
     } else {
-      // Calculate sort manually if no helper function is available
-      const pages = journalEntry.pages.contents; // 'contents' may need to be accessed depending on the structure in v11
+      const pages = journalEntry.pages.contents; 
       sortValue = pages.length ? (pages[pages.length - 1].sort + CONST.SORT_INTEGER_DENSITY) : 0;
     }
-    // Prepare the data object for the new page
     let data = {
       name: pageName || "New Page",
-      // Adjust this structure to match the new expected format
       text: { content: pageContent || "" },
       sort: sortValue,
       parent: journalEntry.id
     };
-    console.log('Data object for new JournalEntryPage:', data);
-    // Check whether the user has the necessary permissions to create the journal page
+    ('Data object for new JournalEntryPage:', data);
     if (!game.user.can("JOURNAL_CREATE")) {
-      ui.notifications.warn("You do not have permission to create new journal pages.");
+      log({
+        message: `You do not have permission to create new journal pages.`,
+        display: ["console", "ui"],
+        type: ["warn"]
+      });
       return;
     }
-
-    // Create the new JournalEntryPage
   try {
-      // The `createdPage` variable holds the newly created page document
       let createdPage = await JournalEntryPage.create(data, {parent: journalEntry});
-      console.log(`New page created with ID: ${createdPage.id}`);
-      // Replace highlighted text in original content with UUID
-      
+      log(`New page created with ID: ${createdPage.id}`);
       let updatedContent = replaceHighlightedTextInContent(highlightedText, createdPage.id, originalContent);
-
-      // Update the editor's content
       updateEditorContent(updatedContent);
-
-      // Save the changes
-      //saveEditorChanges();
-
-      // Allow a brief delay for the UI to update before attempting navigation
-      /*
-      setTimeout(() => {
-        // Call the journal entry's sheet method to switch to the new page
-        if (journalEntry.sheet?.goToPage) {
-          journalEntry.sheet.goToPage(createdPage.id);
-        } else {
-          console.warn(`Could not switch to the new page with ID: ${createdPage.id}`);
-        }
-      }, 100);
-      */
-      // Return the createdPage to enable chaining or further processing if needed
       return createdPage;
     } catch (error) {
-      console.error(`Error creating new JournalEntryPage:`, error);
+      log({
+        message: `Error creating new JournalEntryPage.`,
+        error: error,
+        display: ["console", "ui"],
+        type: ["error"]
+      });
       return null;
     }
   }
-
+/**
+ * Replaces the highlighted text in the content with a reference to the new journal entry page.
+ * @param {string} originalText - The original text to be replaced.
+ * @param {string} pageUUID - The UUID of the new journal entry page.
+ * @param {string} content - The content in which the text replacement will occur.
+ * @returns {string} The updated content with the replaced text.
+ */
 function replaceHighlightedTextInContent(originalText, pageUUID, content) {
     let replacementText = `@UUID[.${pageUUID}]{${originalText}}`;
-    
     return content.split(originalText).join(replacementText);
 }
-
-
+/**
+ * Updates the content of the ProseMirror editor with the given content.
+ * @param {string} updatedContent - The updated content to set in the editor.
+ */
 function updateEditorContent(updatedContent) {
     let editorContentDiv = document.querySelector('.editor-content.journal-page-content.ProseMirror');
     if(editorContentDiv) {
         editorContentDiv.innerHTML = updatedContent;
     } else {
-        console.error('Editor content div not found');
-    }
-}
-
-function saveEditorChanges() {
-    let saveButton = document.querySelector('button[data-action="save"]');
-    if(saveButton) {
-        saveButton.click();
-    } else {
-        console.error('Save button not found');
+        log({
+          message: `Editor content div not found`,
+          display: ["console", "ui"],
+          type: ["error"]
+        });
     }
 }
