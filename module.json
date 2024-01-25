@@ -28,7 +28,7 @@
       "name": "journal-entry-templates",
       "label": "Journal Entry Templates",
       "system": "dnd5e",
-      "path": "./packs/compendiums/templates",
+      "path": "./packs/compendiums/templates.db",
       "type": "Journal Entry"
     }
   ],
