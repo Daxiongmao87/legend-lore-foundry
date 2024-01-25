@@ -35,4 +35,4 @@ With the module enabled, you can use the provided UI tools and extensions within
 [badge_issues]: https://img.shields.io/github/issues/daxiongmao87/legend-lore-foundry?style=flat-square
 [badge_downloads]: https://img.shields.io/github/downloads/daxiongmao87/legend-lore-foundry/total
 
-[badge_fvtt_versions]: https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://github.com/legend-lore-foundry/legend-lore/releases/latest/download/module.json&style=flat-square&color=ff6400
+[badge_fvtt_versions]: https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://github.com/daxiongmao87/legend-lore-foundry/releases/latest/download/module.json&style=flat-square&color=ff6400
