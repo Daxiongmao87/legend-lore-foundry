@@ -220,7 +220,7 @@ function clearDropdownOptions(dropdown) {
   }
   let option = document.createElement("option");
   option.value = "null";
-  option.text = `None`;
+  option.text = `Default`;
   dropdown.add(option);
 }
 /**
