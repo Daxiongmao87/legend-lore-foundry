@@ -44,15 +44,16 @@ export function registerSettings() {
         restricted: true
     });
     game.settings.register('legend-lore', 'globalContext', {
-        scope: 'world',
-        label: "Global Context",
+        name: "Global Context",
         hint: "Context that will be considered when generating content.",
+        scope: 'world',
         config: true,
         type: String,
         default: ''
     });
       game.settings.register('legend-lore', 'journalEntryTemplates', {
         scope: 'world',
+        name: '
         config: false,
         type: Object,
         default: ["journal-entry-templates"]
