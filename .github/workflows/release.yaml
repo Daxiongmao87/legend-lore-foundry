@@ -49,10 +49,9 @@ jobs:
           echo "PREV_TAG=$(git describe --tags --abbrev=0 ${{ env.TAG_NAME }}^)" >> $GITHUB_ENV
 
       - name: Generate Changelog
-        id: generate_changelog
         run: |
-          echo "CHANGELOG=$(git log ${{ env.PREV_TAG }}...${{ env.TAG_NAME }} --pretty=format:'%h %s' --reverse)" >> $GITHUB_ENV
-          echo $CHANGELOG
+          git log ${{ env.PREV_TAG }}...${{ env.TAG_NAME }} --pretty=format:'%h %s' --reverse > changelog.txt
+
 
       - name: Create Tag and Release
         id: create_release
@@ -62,9 +61,10 @@ jobs:
         with:
           tag_name: ${{ env.TAG_NAME }}
           release_name: Release ${{ env.TAG_NAME }}
-          body: ${{ env.CHANGELOG }}
+          body_path: changelog.txt  # Read release body from a file
           draft: false
           prerelease: false
+
 
       - name: Upload module.json
         uses: actions/upload-release-asset@v1
