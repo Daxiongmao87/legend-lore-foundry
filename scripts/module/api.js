@@ -9,6 +9,9 @@ import { log } from './utils.js';
  * @returns {Promise<Object|null>} A promise that resolves to the response from the OpenAI API or null in case of failure.
  */
 async function callOpenAI(preprompt, contextPrompt, model) {
+    log({
+      message: "Processing OpenAI API call."
+    })
     const fullPrompt = `${preprompt}\n\n${contextPrompt}`;
     const apiKey = game.settings.get('legend-lore', 'openaiApiKey');
     if (!apiKey) {
@@ -49,6 +52,9 @@ async function callOpenAI(preprompt, contextPrompt, model) {
         return null;
       }
       const data = await response.json();
+      log({
+        message: "OpenAI API call process successful."
+      })
       return data;
     } catch (error) {
       log({

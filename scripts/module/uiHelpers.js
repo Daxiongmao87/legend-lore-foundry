@@ -333,8 +333,8 @@ async function handleGenerate(options = {
       templateContent: templateContentJSON, 
       model
     });
-    const content = JSON.parse(data.apiResponseContent.choices[0].message.content.trim());
     try {
+        const content = JSON.parse(data.apiResponseContent.choices[0].message.content.trim());
         let jsonObject = content;
         const text = ElementHandler.jsonToHtml(content.output);
         updateUIAfterResponse(options.html, text, data.apiResponseContent.usage);

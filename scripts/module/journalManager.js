@@ -80,7 +80,7 @@ export async function createNewJournalEntryPage(options = {
  */
 function replaceHighlightedTextInContent(originalText, pageUUID, content) {
     let replacementText = `@UUID[.${pageUUID}]{${originalText}}`;
-    return content.split(originalText).join(replacementText);
+    return $(content).find('div').first()[0].innerHTML.split(originalText).join(replacementText);
 }
 /**
  * Updates the content of the ProseMirror editor with the given content.
