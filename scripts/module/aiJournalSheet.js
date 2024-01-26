@@ -41,7 +41,6 @@ class AIJournalSheet {
      */
     openGenerateDialog(options = {}) {
         const journalEntryElement = options.data.html[0];
-        console.log(journalEntryElement);
 
         const idParts = journalEntryElement.id.split('-');
         const journalEntryIdIndex = idParts.findIndex(part => part === 'JournalEntry') + 1;

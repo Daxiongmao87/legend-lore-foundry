@@ -45,7 +45,7 @@ async function callOpenAI(preprompt, contextPrompt, model) {
     try {
       const response = await fetch(`${BASE_URL}`, requestOptions);
       if (!response.ok) {
-        throw new Error(response.statusText);
+        throw new Error(await response.json());
         return null;
       }
       const data = await response.json();

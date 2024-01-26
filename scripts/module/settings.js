@@ -26,7 +26,7 @@ export function registerSettings() {
         scope: 'world',
         config: true,
         type: String,
-        default: "gpt-3.5-turbo-1106 gpt-4-1106-preview" 
+        default: "gpt-3.5-turbo-1106 gpt-4-preview" 
     });
     game.settings.register('legend-lore', 'temperature', {
         name: "Temperature",
