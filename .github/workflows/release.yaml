@@ -43,18 +43,25 @@ jobs:
           echo "TAG_NAME=${GITHUB_REF#refs/heads/}" | sed 's/-release$//' >> $GITHUB_ENV
         id: version_tag
 
-      - name: Get Previous Tag
-        id: prev_tag
+      - name: Get Latest Release Tag
+        id: latest_release
         run: |
-          echo "PREV_TAG=$(git describe --tags --abbrev=0 ${{ env.TAG_NAME }}^)" >> $GITHUB_ENV
+          LATEST_TAG=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/releases/latest \
+            | jq -r '.tag_name')
+          echo "PREV_TAG=$LATEST_TAG" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate Changelog
         run: |
           if [ -z "${{ env.PREV_TAG }}" ]; then
-            git log --pretty=format:'%h %s' --reverse ${{ env.TAG_NAME }} > changelog.txt
+            # If PREV_TAG is empty, default to initial commit or another base
+            git log --pretty=format:'%h %s' --reverse > changelog.txt
           else
-            git log ${{ env.PREV_TAG }}...${{ env.TAG_NAME }} --pretty=format:'%h %s' --reverse > changelog.txt
+            git log ${{ env.PREV_TAG }}...${{ github.ref_name }} --pretty=format:'%h %s' --reverse > changelog.txt
           fi
+
 
       - name: Create Tag and Release
         id: create_release
