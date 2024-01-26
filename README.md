@@ -4,7 +4,7 @@
 
 <sub>☕ **[Buy me a coffee!](https://www.buymeacoffee.com/daxiongmao87)**</sub>
 
-![Screenshot](https://github.com/Daxiongmao87/legend-lore-foundry/blob/main/images/screenshot.png)
+![Screenshot](https://github.com/Daxiongmao87/legend-lore-foundry/blob/main/images/screenshot_dialog.png)
 ## Introduction
 
 **Legend Lore** is an innovative module for Foundry Virtual Tabletop that leverages the power of OpenAI to enhance storytelling and world-building in tabletop RPGs. It allows game masters to generate rich, AI-assisted text content, such as detailed journal entries, descriptions, and narrative elements, directly within Foundry VTT.
@@ -13,15 +13,45 @@
 
 ## Key Features
 
-    - AI-Powered Content Generation: Seamlessly integrate OpenAI's powerful language models to enrich your game sessions.
-    - Dynamic Journal Entries: Create and modify journal entries with AI-generated content.
-    - Customizable Settings: Configure AI models, temperature settings, and other parameters to tailor the AI's output to your campaign.
-    - Enhanced User Interface: Intuitive tools and UI enhancements for a smooth integration within Foundry VTT.
-    - Built-in & User Templates: Template choices are populated by the journal compendiums selected within the module's settings.
+ * **AI-Powered Content Generation:** Seamlessly integrate OpenAI's powerful language models to enrich your game sessions.
+ * **Dynamic Generation of Highlighted Text:** Highlight to generate any text from existing content within the editor.
+ * **Customizable Settings:** Configure AI models, temperature settings, and other parameters to tailor the AI's output to your campaign.
+ * **Built-in & User Templates:** Template choices are populated by the journal compendiums selected within the module's settings, with the default _Journal Entry Templates Compendium_ containing many templates to get you started.
+
+### List of Templates
+* Continent
+* World
+* Character
+* Settlement
+* Scenario
+* Item
+* Region
+* Domain
+* Point of Interest
+* Faction
+* Lore
+* Culture
+* Religion
+* Miscellaneous
+
+## Screenshots
+
+### Generation Dialog
+
+![Screenshot](https://github.com/Daxiongmao87/legend-lore-foundry/blob/main/images/screenshot_dialog.png)
+
+### 'Generate Page' Element
+
+![Screenshot](https://github.com/Daxiongmao87/legend-lore-foundry/blob/main/images/screenshot_generate_page.png)
+
+### Content Generation Highlight Feature
+
+![Screenshot](https://github.com/Daxiongmao87/legend-lore-foundry/blob/main/images/screenshot_highlight.png)
+
 
 ## Requirements
 
-    - OpenAI API Key: A valid API key from OpenAI is necessary to utilize the AI content generation features.
+* OpenAI API Key: A valid API key from OpenAI is necessary to utilize the AI content generation features.
 
 ## Installation and Setup
 
