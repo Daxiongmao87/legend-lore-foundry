@@ -37,7 +37,7 @@ async function callOpenAI(preprompt, contextPrompt, model) {
           }
         ],
         temperature: game.settings.get('legend-lore', 'temperature'), 
-        MAX_TOKENS: MAX_TOKENS, 
+        max_tokens: MAX_TOKENS, 
         response_format: { type: "json_object" }, 
 
       }),
@@ -88,8 +88,6 @@ export async function processGPTRequest(options = {
   model
 }) {
     const preprompt = `You are a TTRPG content generator.`
-    (options);
-    (JSON.stringify(options.templateContent));
     let prompt = `Generate a fully-detailed and RICH TTRPG entry for "${options.journalEntryName}" from within "${options.originalTitle}" on the following subject: "${options.subject}".  Expand on "${options.journalEntryName}" in granular detail and introduce new subjects within the context of "${options.originalTitle}".  `
     if(options.context) {
       prompt = prompt + `Here is more context on "${options.subject}" below:

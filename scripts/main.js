@@ -4,7 +4,7 @@ import './module/api.js';
 import './module/uiHelpers.js';
 import './module/journalManager.js';
 import './module/aiJournalSheet.js';
-import './module/utils.js';
+import { log } from './module/utils.js';
 /**
  * Initializes the Legend Lore module. This function sets up a hook that is
  * triggered when Foundry VTT is ready, logging a message to indicate the module is ready.
