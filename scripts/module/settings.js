@@ -22,7 +22,7 @@ export function registerSettings() {
     });
     game.settings.register('legend-lore', 'models', {
         name: "Models",
-        hint: "Enter models you wish to have available in a space-separated list.  Only models with JSON mode are supported. For model information, see [OpenAI Models]. For pricing information, see [OpenAI Pricing Link].",
+        hint: "Enter models you wish to have available in a space-separated list.  Only models with JSON mode are supported. For model information, see [OpenAI Models]. For pricing information, see [OpenAI Pricing].",
         scope: 'world',
         config: true,
         type: String,
@@ -154,11 +154,14 @@ class JournalEntrySelectionApplication extends FormApplication {
  * @param {Object} data - Data provided to the template.
  */
 Hooks.on('renderPackageConfiguration', (app, html, data) => {
-    let apiKeyInput = $('[name="legend-lore.openaiApiKey"]')[0];
+    const apiKeyInput = $(html).find('[name="legend-lore.openaiApiKey"]')[0];
     if (apiKeyInput) {
         apiKeyInput.type = 'password';
         apiKeyInput.autocomplete = 'one-time-code';
     }
+    const openAIModelsNote = $(html).find("[data-setting-id='legend-lore.models']").find('.notes').first()[0];
+    openAIModelsNote.innerHTML = openAIModelsNote.innerHTML.replace("[OpenAI Models]", "<a href='https://platform.openai.com/docs/models/overview'>OpenAI Models</a>");
+    openAIModelsNote.innerHTML = openAIModelsNote.innerHTML.replace("[OpenAI Pricing]", "<a href='https://openai.com/pricing'>OpenAI Pricing</a>");
 });
 /**
  * Hook for Foundry VTT's 'ready' event. It calls the registerSettings function to initialize
