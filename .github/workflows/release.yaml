@@ -50,8 +50,11 @@ jobs:
 
       - name: Generate Changelog
         run: |
-          git log ${{ env.PREV_TAG }}...${{ env.TAG_NAME }} --pretty=format:'%h %s' --reverse > changelog.txt
-
+          if [ -z "${{ env.PREV_TAG }}" ]; then
+            git log --pretty=format:'%h %s' --reverse ${{ env.TAG_NAME }} > changelog.txt
+          else
+            git log ${{ env.PREV_TAG }}...${{ env.TAG_NAME }} --pretty=format:'%h %s' --reverse > changelog.txt
+          fi
 
       - name: Create Tag and Release
         id: create_release
