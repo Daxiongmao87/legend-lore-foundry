@@ -55,7 +55,7 @@
 * 
 **NOTE: Only models that support JSON mode are compatible with this module.  Please see [OpenAI Models](https://platform.openai.com/docs/models) for more info.**
   
-**NOTE: Generation has costs.  Please see [OpenAI Pricing](https://openai.coam/pricing)for more info.**
+**NOTE: Generation has costs.  Please see [OpenAI Pricing](https://openai.coam/pricing) for more info.**
 
 ## Installation and Setup
 
