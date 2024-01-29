@@ -52,6 +52,8 @@
 ## Requirements
 
 * OpenAI API Key: A valid API key from OpenAI is necessary to utilize the AI content generation features.
+** NOTE: Only models that support JSON mode are compatible with this module.  Please see [OpenAI Models](https://platform.openai.com/docs/models) for more info. **
+** NOTE: Generation has costs.  Please see [OpenAI Pricing](https://openai.coam/pricing)for more info. 
 
 ## Installation and Setup
 
@@ -62,7 +64,7 @@ After installing the module, navigate to the module settings in Foundry VTT to e
 With the module enabled, you can use the provided UI tools and extensions within Foundry VTT to generate and manage AI-assisted content. The module integrates directly with the journal system and other Foundry VTT features, offering a seamless and enriching gameplay experience.
 
 [badge_version]: https://img.shields.io/github/v/tag/daxiongmao87/legend-lore-foundry?label=Version&style=flat-square&color=2577a1
-[badge_issues]: https://img.shields.io/github/issues/daxiongmao87/legend-lore-foundry?style=flat-square
+[badge_issues]: https://img.shields.io/github/issues/daxiongmao87/legend-lore-foundry?style=flat-squarb
 [badge_downloads]: https://img.shields.io/github/downloads/daxiongmao87/legend-lore-foundry/total
 
 [badge_fvtt_versions]: https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://github.com/daxiongmao87/legend-lore-foundry/releases/latest/download/module.json&style=flat-square&color=ff6400
