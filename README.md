@@ -1,10 +1,11 @@
 # Legend Lore Module for Foundry VTT
 ![badge_version] ![badge_issues] ![badge_downloads]
 ![badge_fvtt_versions]
+[<img src="https://img.shields.io/badge/Buy%20me-a%20coffee%20%E2%98%95-chocolate">](https://www.buymeacoffee.com/daxiongmao87)
 
-<sub>☕ **[Buy me a coffee!](https://www.buymeacoffee.com/daxiongmao87)**</sub>
 
 ![Screenshot](https://github.com/Daxiongmao87/legend-lore-foundry/blob/main/images/screenshot_dialog.png)
+
 ## Introduction
 
 **Legend Lore** is an innovative module for Foundry Virtual Tabletop that leverages the power of OpenAI to enhance storytelling and world-building in tabletop RPGs. It allows game masters to generate rich, AI-assisted text content, such as detailed journal entries, descriptions, and narrative elements, directly within Foundry VTT.
