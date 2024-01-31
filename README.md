@@ -1,8 +1,8 @@
 # Legend Lore Module for Foundry VTT
 ![badge_version] ![badge_issues] ![badge_downloads]
 ![badge_fvtt_versions]
-[<img src="https://img.shields.io/badge/Buy%20me-a%20coffee%20%E2%98%95-chocolate">](https://www.buymeacoffee.com/daxiongmao87)
 
+[<img src="https://img.shields.io/badge/Buy%20me-a%20coffee%20%E2%98%95-chocolate">](https://www.buymeacoffee.com/daxiongmao87)
 
 ![Screenshot](https://github.com/Daxiongmao87/legend-lore-foundry/blob/main/images/screenshot_dialog.png)
 
