@@ -2,7 +2,7 @@
 ![badge_version] ![badge_issues] ![badge_downloads]
 ![badge_fvtt_versions]
 
-[<img src="https://img.shields.io/badge/Buy%20me-a%20coffee%20%E2%98%95-chocolate">](https://www.buymeacoffee.com/daxiongmao87)
+[<img src="https://img.shields.io/badge/Support%20My%20Work-Buy%20me%20a%20coffee%20%E2%98%95-chocolate?style=plastic">](https://www.buymeacoffee.com/daxiongmao87)
 
 ![Screenshot](https://github.com/Daxiongmao87/legend-lore-foundry/blob/main/images/screenshot_dialog.png)
 
@@ -66,8 +66,7 @@ After installing the module, navigate to the module settings in Foundry VTT to e
 
 With the module enabled, you can use the provided UI tools and extensions within Foundry VTT to generate and manage AI-assisted content. The module integrates directly with the journal system and other Foundry VTT features, offering a seamless and enriching gameplay experience.
 
-[badge_version]: https://img.shields.io/github/v/tag/daxiongmao87/legend-lore-foundry?label=Version&style=flat-square&color=2577a1
-[badge_issues]: https://img.shields.io/github/issues/daxiongmao87/legend-lore-foundry?style=flat-squarb
-[badge_downloads]: https://img.shields.io/github/downloads/daxiongmao87/legend-lore-foundry/total
-
-[badge_fvtt_versions]: https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://github.com/daxiongmao87/legend-lore-foundry/releases/latest/download/module.json&style=flat-square&color=ff6400
+[badge_version]: https://img.shields.io/github/v/tag/daxiongmao87/legend-lore-foundry?label=Version&style=plastic&color=2577a1
+[badge_issues]: https://img.shields.io/github/issues/daxiongmao87/legend-lore-foundry?label=Issues&style=plastic
+[badge_downloads]: https://img.shields.io/github/downloads/daxiongmao87/legend-lore-foundry/total?label=Downloads&style=plastic
+[badge_fvtt_versions]: https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://github.com/daxiongmao87/legend-lore-foundry/releases/latest/download/module.json&style=plastic&color=ff6400
