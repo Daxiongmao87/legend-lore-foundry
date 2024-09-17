@@ -18,6 +18,7 @@
  * **Dynamic Generation of Highlighted Text:** Highlight to generate any text from existing content within the editor.
  * **Customizable Settings:** Configure AI models, temperature settings, and other parameters to tailor the AI's output to your campaign.
  * **Built-in & User Templates:** Template choices are populated by the journal compendiums selected within the module's settings, with the default _Journal Entry Templates Compendium_ containing many templates to get you started.
+ * **Local LLM Support** Use your own LLM. _Experimental_
 
 ### List of Templates
 * Continent
@@ -54,6 +55,8 @@
 
 * OpenAI API Key: A valid API key from OpenAI is necessary to utilize the AI content generation features.
 
+**NOTE: This is not required if using a local LLM**
+
 **NOTE: Only models that support JSON mode are compatible with this module.  Please see [OpenAI Models](https://platform.openai.com/docs/models) for more info.**
   
 **NOTE: Generation has costs.  Please see [OpenAI Pricing](https://openai.coam/pricing) for more info.**
@@ -61,6 +64,8 @@
 ## Installation and Setup
 
 After installing the module, navigate to the module settings in Foundry VTT to enter your OpenAI API key and configure the desired settings for AI models and content generation preferences. 
+
+For local LLM, provide the url (usually localhost:PORT), and disable https. Please note this feature is experimental, and your results are dependant on the model and settings you use. If the response from your LLM is not formatted right, or the model hallucinates, or stops generating because it has reached its context limit, the JSON will fail to parse.
 
 ## Usage
 

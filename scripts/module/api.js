@@ -46,7 +46,9 @@ async function callOpenAI(preprompt, contextPrompt, model) {
       }),
     };
     try {
-      const response = await fetch(`${BASE_URL}`, requestOptions);
+      const baseUrl = game.settings.get('legend-lore', 'baseUrl');
+      const httpSetting = game.settings.get('legend-lore', 'https') ? 'https' : "http";
+      const response = await fetch(`${httpSetting}://${baseUrl}/v1/chat/completions`, requestOptions);
       if (!response.ok) {
         throw new Error(await response.json());
         return null;

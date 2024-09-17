@@ -12,6 +12,22 @@ export const BASE_URL = 'https://api.openai.com/v1/chat/completions';
  * available models, temperature settings, journal entry templates, and global context.
  */
 export function registerSettings() {
+    game.settings.register('legend-lore', 'https', {
+        name: 'Enable HTTPS',
+        hint: 'Whether to use HTTPS or HTTP for the OpenAI API URL (default: True). Disable this if using localhost',
+        scope: 'world',
+        config: true,
+        type: Boolean,
+        default: true,
+    });
+    game.settings.register('legend-lore', 'baseUrl', {
+        name: 'Base URL',
+        hint: 'Enter the base URL for the OpenAI compatible API (default: api.openai.com). Include the port number if necessary. Use "localhost:PORT" if using localhost (e.g. localhost:1234).',
+        scope: 'world',
+        config: true,
+        type: String,
+        default: 'api.openai.com',
+    });
     game.settings.register('legend-lore', 'openaiApiKey', {
         name: "OpenAI API Key",
         hint: "Enter your OpenAI API key here.",

@@ -334,7 +334,7 @@ async function handleGenerate(options = {
       model
     });
     try {
-        const content = JSON.parse(data.apiResponseContent.choices[0].message.content.trim());
+        const content = JSON.parse(data.apiResponseContent.choices[0].message.content.trim().replace(/###(.|\n)*/gm, '').replace(/```(.|\n)*/gm, ''));  // helps remove tailing info from some local models
         let jsonObject = content;
         const text = ElementHandler.jsonToHtml(content.output);
         updateUIAfterResponse(options.html, text, data.apiResponseContent.usage);
