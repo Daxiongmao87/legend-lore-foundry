@@ -6,7 +6,7 @@ import { log } from './utils.js';
 /**
  * Processes the LLM request by constructing a payload from a template with placeholders.
  * Expects the settings to include a 'payloadJson' template with:
- *  - {{UserInput}}
+ *  - {{GenerationContext}}
  *  - {{ContentTemplate}}
  *
  * @param {Object} params - The parameters for the request.
@@ -23,7 +23,7 @@ export async function processLLMRequest(params) {
   // Replace placeholders with actual values.
   payloadTemplate = payloadTemplate
     .replaceAll('{{Model}}', params.model)
-    .replaceAll('{{UserInput}}', sanitizedContentTemplateInstructions)
+    .replaceAll('{{GenerationContext}}', sanitizedContentTemplateInstructions)
     .replaceAll('{{ContentTemplate}}', sanitizedContentTemplateSchema);
   let payload;
   try {

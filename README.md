@@ -8,19 +8,18 @@
 
 ## Introduction
 
-**Legend Lore** is an innovative module for Foundry Virtual Tabletop that leverages the power of OpenAI to enhance storytelling and world-building in tabletop RPGs. It allows game masters to generate rich, AI-assisted text content, such as detailed journal entries, descriptions, and narrative elements, directly within Foundry VTT.
+**Legend Lore** is an innovative module for Foundry Virtual Tabletop that leverages the power of Large Language Models to enhance storytelling and world-building in tabletop RPGs. It allows game masters to generate rich, AI-assisted text content, such as detailed journal entries, descriptions, and narrative elements, directly within Foundry VTT.
 
-***NOTE**: This module requires an active OpenAI API key to function. Ensure that your key is securely stored and never exposed to clients.*
 
 ## Key Features
 
- * **AI-Powered Content Generation:** Seamlessly integrate OpenAI's powerful language models to enrich your game sessions.
+ * **AI-Powered Content Generation:** Seamlessly integrate powerful language models to enrich your game sessions.
  * **Dynamic Generation of Highlighted Text:** Highlight to generate any text from existing content within the editor.
- * **Customizable Settings:** Configure AI models, temperature settings, and other parameters to tailor the AI's output to your campaign.
+ * **Customizable Settings:** Configure AI models, payload JSON templates, genreation retries, reasoning tag filtering, etc.
  * **Built-in & User Templates:** Template choices are populated by the journal compendiums selected within the module's settings, with the default _Journal Entry Templates Compendium_ containing many templates to get you started.
- * **Local LLM Support** Use your own LLM. _Experimental_
+ * **Complete Control Over JSON Payload** A customizable JSON payload template allows you to control the structure of the data sent to the AI model, making it flexible with most APIs.  This means the ability to use local or paid AI services.
 
-### List of Templates
+### List of Included Templates
 * Continent
 * World
 * Character
@@ -53,19 +52,159 @@
 
 ## Requirements
 
-* OpenAI API Key: A valid API key from OpenAI is necessary to utilize the AI content generation features.
+* Access to an LLM API: Access to an LLM API  is necessary to utilize the AI content generation features.  Here are some options:
 
-**NOTE: This is not required if using a local LLM**
+* OpenAI (paid)
+* Perplexity (paid)
+* Anthropic (paid)
+* Grok (paid)
+* Google AI Studio (free for now)
+* Open WebUI (self-hostable)
+* Ollama (self-hostable)
+* KoboldCPP (self-hostable)
 
-**NOTE: Only models that support JSON mode are compatible with this module.  Please see [OpenAI Models](https://platform.openai.com/docs/models) for more info.**
-  
-**NOTE: Generation has costs.  Please see [OpenAI Pricing](https://openai.coam/pricing) for more info.**
+**NOTE: Models that support JSON mode or are traind on some JSON output are recommended for less error-prone results.
+
+**NOTE: Generation has costs.  Please be aware that generation can be expensive, especially with paid APIs.  Please research the costs associated with using these services.
 
 ## Installation and Setup
 
-After installing the module, navigate to the module settings in Foundry VTT to enter your OpenAI API key and configure the desired settings for AI models and content generation preferences. 
+After installing the module, navigate to the module settings in Foundry VTT to configure the desired settings for AI models and content generation preferences.
 
-For local LLM, provide the url (usually localhost:PORT), and disable https. Please note this feature is experimental, and your results are dependant on the model and settings you use. If the response from your LLM is not formatted right, or the model hallucinates, or stops generating because it has reached its context limit, the JSON will fail to parse.
+### Configuration
+#### Journal Entry Templates
+You can choose which journal compendiums to use for templates.
+#### Enable HTTPS
+Enable this if your service requires HTTPS.
+
+* Note, if you're self-hosting, and are using a self-signed certificate, this will not work.  You'll need to either have an http endpoint or a valid certificate for https
+#### Text Generation API URL
+This is the URL for the API you are using.  This can be a local or remote URL.
+
+##### Endpoint Examples
+<div>
+    <details>
+        <summary>OpenAI API</summary>
+        <pre>
+        https://api.openai.com/v1/chat/completions
+        </pre>
+    </details>
+    <details>
+        <summary>Open WebUI</summary>
+        <pre>
+        http://localhost:5000/api/chat/completions
+        </pre>
+    </details>
+    <details>
+        <summary>Google AI Studio
+        <pre>
+        https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+        </pre>
+    </details>
+
+* Note: If your API endpoint is not listed here and you've successfully used it with this module, please submit an issue (or PR) to have it added to the list.
+#### API Key (Optional)
+This is the API key for the service you are using.  This is optional, but some services require it.
+#### Models
+Providing a comma-delimited list of models will allow you to switch between models when generating content.  This is useful if you have multiple models available to you.
+#### Payload JSON
+This sets the structure of the JSON payload that is sent to the AI model.  The default is set to OpenAI's expected JSON format.  You can customize this to fit the requirements of the AI model you are using.
+
+The following placeholders are for the module to replace with the appropriate values:
+* `{{Model}}` - The model selected within the generation dialog
+* `{{GenerationContext}}` - The context input submitted to
+
+##### Template Examples
+<details>
+    <summary>OpenAI API</summary>
+    <pre>
+    {
+      "model": "{{Model}}",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are a narrative generator for role-playing game journals. The content must be diegetic. Avoid anachronistic references. Your output must be a valid JSON object. The following JSON contains your output instructions. Consider everything wrapped in square brackets '[]' as instructions for you to follow."
+        },
+        {
+          "role": "user",
+          "content": "{{GenerationContext}}"
+        }
+      ],
+      "response_format": {{ContentTemplate}},
+    }
+    </pre>
+</details>
+<details>
+    <summary>Open WebUI</summary>
+    <pre>
+    {
+      "model": "{{Model}}",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are a narrative generator for role-playing game journals. The content must be diegetic. Avoid anachronistic references. Your output must be a valid JSON object. The following JSON contains your output instructions. Consider everything wrapped in square brackets '[]' as instructions for you to follow. Response format: '{{ContentTemplate}}'",
+        },
+        {
+          "role": "user",
+          "content": "{{GenerationContext}}"
+        }
+      ],
+      "stream": false
+    }
+    </pre>
+</details>
+<details>
+    <summary>Google AI Studio</summary>
+    <pre>
+    {
+      "system_instruction": {
+        "parts": {
+          "text": "You are a narrative generator for role-playing game journals. The content must be diegetic. Avoid anachronistic references. Your output must be a valid JSON object. The following JSON contains your output instructions. Consider everything wrapped in square brackets '[]' as instructions for you to follow. Response format: '{{ContentTemplate}}'"
+        }
+      },
+      "contents": {
+      "parts": {
+        "text": "{{GenerationContext}}"
+        }
+      }
+    }
+    </pre>
+
+* Note: If your API endpoint is not listed here and you've successfully used it with this module, please submit an issue (or PR) to have it added to the list.
+
+#### Response JSON Path
+This is the path to the content in the JSON response from the AI model.  This is used to extract the content from the response.
+
+##### Response JSON Path Examples
+<details>
+    <summary>OpenAI API</summary>
+    <pre>
+    choices.0.message.content
+    </pre>
+</details>
+<details>
+    <summary>Open WebUI</summary>
+    <pre>
+    choices.0.message.content
+    </pre>
+</details>
+<details>
+    <summary>Google AI Studio</summary>
+    <pre>
+    .candidates.0.content.parts.0.text
+    </pre>
+</details>
+
+* Note: If your API endpoint is not listed here and you've successfully used it with this module, please submit an issue (or PR) to have it added to the list.
+
+#### Reasoning End Tag
+This is the tag that the module will use to determine the end of the reasoning section of the generated content.  This is used to filter the reasoning output out of the generated content.
+
+#### Genreation Retry Limit
+This is the number of times the module will attempt to generate content before giving up.  This is useful if the AI model is not responding or is returning errors.
+
+#### Global Context
+This is the global context that is sent to the AI model with every request.  This is useful for setting up a global context that is used for every request.
 
 ## Usage
 

@@ -17,7 +17,7 @@ export function registerSettings() {
     },
     {
       "role": "user",
-      "content": "{{UserInput}}"
+      "content": "{{GenerationContext}}"
     }
   ],
   "response_format": {{ContentTemplate}},
