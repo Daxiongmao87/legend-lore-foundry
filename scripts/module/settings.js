@@ -9,11 +9,11 @@ export function registerSettings() {
 
     const defaultPayloadJson = `# Example payload JSON for the OpenAI GPT-4o model.
 {
-  "model": "gpt-4o",
+  "model": "{{Model}}",
   "messages": [
     {
       "role": "system",
-      "content": "You are a narrative generator for role-playing game journals. The content must be diegetic. Avoid anachronistic references. Your output must be a valid JSON object. The following JSON contains your output instructions."
+      "content": "You are a narrative generator for role-playing game journals. The content must be diegetic. Avoid anachronistic references. Your output must be a valid JSON object. The following JSON contains your output instructions. Consider everything wrapped in square brackets '[]' as instructions for you to follow."
     },
     {
       "role": "user",
@@ -46,6 +46,14 @@ export function registerSettings() {
         type: String,
         default: ""
     });
+    game.settings.register('legend-lore', 'models', {
+        name: "Models",
+        hint: "Enter the models you want to use for text generation in a comma-delimited list.",
+        scope: 'world',
+        config: true,
+        type: String,
+        default: "gpt-4o, gpt-3.5-turbo"
+    });
     game.settings.register('legend-lore', 'payloadJson', {
         name: "Payload JSON",
         hint: "Enter the JSON payload for the API request.",
@@ -69,6 +77,14 @@ export function registerSettings() {
         config: true,
         type: String,
         default: ''
+    });
+    game.settings.register('legend-lore', 'generationRetryLimit', {
+        name: "Generation Retry Limit",
+        hint: "Enter the maximum number of retries for text generation.",
+        scope: 'world',
+        config: true,
+        type: Number,
+        default: 3
     });
     game.settings.registerMenu("legend-lore", "templateSettingMenu", {
         name: "Journal Entry Templates",

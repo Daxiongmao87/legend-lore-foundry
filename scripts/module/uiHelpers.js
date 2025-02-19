@@ -72,6 +72,7 @@ export async function openDialog(options = {
       render: async (html) => dialogHelper({
         html: html,
         type: type,
+        model: html.find('#llm-model').val(),
         highlightedText: highlightedText,
         journalEntryName: journalEntryName,
         originalTitle: originalTitle,
@@ -146,6 +147,7 @@ async function dialogHelper(options = {
     }
   });
   populateJournalEntryTemplates();
+  populateModels();
 }
 /**
  * Resets the style of the preview element in the dialog to its default state.
@@ -287,7 +289,7 @@ async function handleGenerate(options = {
     $(options.html).find(".dialog-button.generate")[0].innerHTML = `<i class="fas fa-sparkle fa-spin"></i> Generating...`;
     const formElements = $(options.html).find('input, textarea, button, a');
     formElements.prop('disabled', true);
-
+    const model = $(options.html).find(".legend-lore.llm-model")[0].value;
     let entryTitle, contextInput, additionalContext;
     if(options.type === "context") {
       entryTitle = options.highlightedText;
@@ -323,17 +325,11 @@ async function handleGenerate(options = {
 
     // Call processLLMRequest with userInput and contentTemplate.
     let data;
-    try {
-      data = await processLLMRequest({
-          contentTemplateInstructions: contentTemplateInstructions,
-          contentTemplateSchema: contentTemplateSchema
-      });
-    } catch (error) {
-      log({message: "Error during content generation.", error: error, type: ["error"]});
-      formElements.prop('disabled', false);
-      return;
-    }
-
+    data = await processLLMRequest({
+        model: model,
+        contentTemplateInstructions: contentTemplateInstructions,
+        contentTemplateSchema: contentTemplateSchema
+    });
     let text;
     try {
         // Expecting the response to be a JSON with an 'output' field.
@@ -360,6 +356,8 @@ async function handleGenerate(options = {
     formElements.prop('disabled', false);
 }
 
+//export { handleGenerate };
+
 /**
  * Updates the UI after receiving a response from the LLM.
  * @param {JQuery} html - The jQuery object for the dialog.
@@ -373,7 +371,20 @@ function updateUIAfterResponse(html, returnedContent) {
     $(html).find(".dialog-button.generate")[0].innerHTML = `<i class="fas fa-sparkle"></i> Generate`;
 }
 
-export { handleGenerate };
+
+/**
+ * Populates the model dropdown in the dialog with available LLM models from the module settings.
+ */
+function populateModels() {
+  const dropdown = document.getElementById("llm-model");
+  const models= game.settings.get('legend-lore','models').split(',').map(model => model.trim());
+  for (const model of models) {
+    const option = document.createElement("option");
+    option.value = model;
+    option.text = model;
+    dropdown.add(option);
+  }
+}
 
 /**
  * Populates a dropdown with journal entries available in the game. Used for selecting a journal entry in the dialog.

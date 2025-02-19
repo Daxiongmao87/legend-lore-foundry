@@ -1,6 +1,6 @@
 {
   "title": "Legend Lore",
-  "description": "A GPT powered journal content generator.",
+  "description": "An LLM-powered journal content generator.",
   "version": "0.4.0",
   "url": "https://github.com/Daxiongmao87/legend-lore",
   "manifest": "https://github.com/Daxiongmao87/legend-lore-foundry/releases/download/v0.4.0/module.json",
