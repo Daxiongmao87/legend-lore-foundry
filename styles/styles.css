@@ -1,6 +1,8 @@
 /* Colors */
 :root {
-  --legend-lore-color-pale-violet: #f4d1f9;
+  --legend-lore-color-violet-glow: #f4d1f9;
+  --legend-lore-color-pale-violet-transparent: rgb(150 2 255 / 80%);
+  --legend-lore-color-bright-violet-transparent: rgb(180 96 255 / 80%);
   --legend-lore-color-violet: #3b0075;
   --legend-lore-color-dark-violet: #2a004e;
   --legend-lore-color-very-dark-violet: #1a002e;
@@ -42,15 +44,24 @@ button.generate-entry-link.content-link.content-link-legend-lore:hover,
 button.dialog-button.generate:enabled:hover,
 button.generate-entry:enabled:hover {
   transform: scale(1.05);
-  transition: transform 0.5s;
-  box-shadow: 0 0 15px var(--legend-lore-color-pale-violet);
+  transition: transform 0.5s, box-shadow 0.25s;
+  box-shadow: 0 0 15px var(--legend-lore-color-violet-glow);
+  background: linear-gradient(
+    to top,
+    var(--legend-lore-color-violet-glow) 0%,
+    var(--legend-lore-color-pale-violet-transparent) 5%,
+    var(--legend-lore-color-violet) 30%,
+    var(--legend-lore-color-dark-violet) 70%,
+    var(--legend-lore-color-violet) 90%,
+    var(--legend-lore-color-violet-glow) 99%
+  );
 }
 
 button.generate-entry-link.content-link.content-link-legend-lore:active,
 button.dialog-button.generate:enabled,
 button.generate-entry:enabled {
   transform: scale(1.0);
-  transition: transform 0.5s;
+  transition: transform 0.5s, box-shadow 0.25s;
 }
 
 .content-link.generate-entry-link,
@@ -60,8 +71,11 @@ button.dialog-button.generating {
   position: relative;
   background: linear-gradient(
     to bottom,
-    var(--legend-lore-color-violet) 0%,
-    #000 100%
+    var(--legend-lore-color-pale-violet-transparent) 0%,
+    var(--legend-lore-color-violet) 30%,
+    #000 70%,
+    var(--legend-lore-color-violet) 90%,
+    var(--legend-lore-color-pale-violet-transparent) 100%
   );
   overflow: hidden;
 }
