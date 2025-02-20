@@ -15,7 +15,7 @@
 
  * **AI-Powered Content Generation:** Seamlessly integrate powerful language models to enrich your game sessions.
  * **Dynamic Generation of Highlighted Text:** Highlight to generate any text from existing content within the editor.
- * **Customizable Settings:** Configure AI models, payload JSON templates, genreation retries, reasoning tag filtering, etc.
+ * **Customizable Settings:** Configure AI models, payload JSON templates, generation tries, reasoning tag filtering, etc.
  * **Built-in & User Templates:** Template choices are populated by the journal compendiums selected within the module's settings, with the default _Journal Entry Templates Compendium_ containing many templates to get you started.
  * **Complete Control Over JSON Payload** A customizable JSON payload template allows you to control the structure of the data sent to the AI model, making it flexible with most APIs.  This means the ability to use local or paid AI services.
 
@@ -200,7 +200,7 @@ This is the path to the content in the JSON response from the AI model.  This is
 #### Reasoning End Tag
 This is the tag that the module will use to determine the end of the reasoning section of the generated content.  This is used to filter the reasoning output out of the generated content.
 
-#### Genreation Retry Limit
+#### Generation Try Limit
 This is the number of times the module will attempt to generate content before giving up.  This is useful if the AI model is not responding or is returning errors.
 
 #### Global Context

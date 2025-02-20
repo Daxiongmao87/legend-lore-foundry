@@ -1,5 +1,4 @@
-import { processLLMRequest } from "./api.js";
-import { createNewJournalEntryPage } from "./journalManager.js";
+import { processLLMRequest } from "./api.js"; import { createNewJournalEntryPage } from "./journalManager.js";
 import { ElementHandler } from './elementTransformer.js';
 import { log, jsonToSchema } from './utils.js';
 /**
@@ -286,7 +285,10 @@ async function handleGenerate(options = {
   journalEntryId
 }) {
     // Update the UI: disable form elements and change button state.
-    $(options.html).find(".dialog-button.generate")[0].innerHTML = `<i class="fas fa-sparkle fa-spin"></i> Generating...`;
+    const genButton = $(options.html).find(".dialog-button.generate")[0];
+    genButton.innerHTML = `<i class="fas fa-spinner-third fa-spin"></i> Generating...`;
+    // add a 'generating' class
+    genButton.classList.add('generating');
     const formElements = $(options.html).find('input, textarea, button, a');
     formElements.prop('disabled', true);
     const model = $(options.html).find(".legend-lore.llm-model")[0].value;
@@ -330,11 +332,24 @@ async function handleGenerate(options = {
         contentTemplateInstructions: contentTemplateInstructions,
         contentTemplateSchema: contentTemplateSchema
     });
+    // If data returns an error, log it and update the UI.
+    if (data.error) {
+        log({
+          message: data.error,
+          type: ["error"],
+          display: ["error", "ui"]
+        });
+        formElements.prop('disabled', false);
+        genButton.classList.remove('generating');
+        $(options.html).find(".dialog-button.generate")[0].innerHTML = `<i class="fas fa-spinner-third"></i> Generate`;
+        return;
+    }
+
     let text;
     try {
         // Expecting the response to be a JSON with an 'output' field.
-        const content = JSON.parse(data);
-        text = ElementHandler.jsonToHtml(content);
+        text = ElementHandler.jsonToHtml(data.responseJSON);
+        console.log(text)
     } catch (error) {
         log({
           message:"Error parsing JSON response.",
@@ -344,7 +359,7 @@ async function handleGenerate(options = {
         });
     }
     try {
-        updateUIAfterResponse(options.html, text);
+        updateUIAfterResponse(options.html, text, data.tries, data.generationTime);
     } catch (error) {
         log({
           message: "Error updating UI after response.",
@@ -354,9 +369,9 @@ async function handleGenerate(options = {
         });
     }
     formElements.prop('disabled', false);
+    genButton.classList.remove('generating');
 }
 
-//export { handleGenerate };
 
 /**
  * Updates the UI after receiving a response from the LLM.
@@ -364,11 +379,13 @@ async function handleGenerate(options = {
  * @param {HTMLElement} returnedContent - The HTML element containing the generated content.
  * @param {Object} tokens - Token usage information.
  */
-function updateUIAfterResponse(html, returnedContent) {
+function updateUIAfterResponse(html, returnedContent, retryCount, generationTime) {
     updatePreviewStyle("generation-preview");
     $(html).find('.legend-lore.generation-preview').html(returnedContent.outerHTML);
-//    $(html).find('#response-container').show();
-    $(html).find(".dialog-button.generate")[0].innerHTML = `<i class="fas fa-sparkle"></i> Generate`;
+    $(html).find('#retry-count').html(`<strong>Tries: ${retryCount}</strong>`);
+    $(html).find('#generation-time').html(`<strong>Generation Time: ${generationTime}</strong>`);
+    $(html).find('#response-container').show();
+    $(html).find(".dialog-button.generate")[0].innerHTML = `<i class="fas fa-spinner-third"></i> Generate`;
 }
 
 

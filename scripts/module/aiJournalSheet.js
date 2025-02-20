@@ -27,11 +27,16 @@ class AIJournalSheet {
         createButton.css("margin", "0.5rem 0.25rem");
 
         const genButton = $(document.createElement("button"));
-        genButton.addClass("generate");
+        genButton.addClass("generate-entry"); // This class will be used for the ::after rule
         genButton.attr('data-action', 'generate');
         genButton.css("margin", "0.5rem 0.25rem");
-        genButton.append('<i class="fa-solid fa-wand-sparkles"></i> Generate Page');
-        genButton.click({html: this.options.html}, this.openGenerateDialog);
+
+        // Inject a CSS rule for the ::after pseudo-element of .generate
+        const styleEl = document.createElement('style');
+        document.head.appendChild(styleEl);
+
+        genButton.append('<i class="fa-solid fa-wand-sparkles"></i> Generate');
+        genButton.click({ html: this.options.html }, this.openGenerateDialog);
         createButton.after(genButton);
     }
 

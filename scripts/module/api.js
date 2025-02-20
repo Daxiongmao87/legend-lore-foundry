@@ -46,10 +46,13 @@ export async function processLLMRequest(params) {
 
   // Retrieve the API key.
   const apiKey = game.settings.get('legend-lore', 'apiKey');
-  const retryLimit = game.settings.get('legend-lore', 'generationRetryLimit');
-  let retryCount = 0;
-  while (retryCount < retryLimit) {
+  const tryLimit = game.settings.get('legend-lore', 'generationTryLimit');
+  let tryCount = 0;
+  // Start async timer
+  const startTime = performance.now();
+  while (tryCount < tryLimit) {
     let response = '';
+
     try {
       // skip ssl if module setting skipSSLVerification is true
       response = await fetch(apiUrl, {
@@ -61,13 +64,13 @@ export async function processLLMRequest(params) {
         body: JSON.stringify(payload)
       });
     } catch (error) {
-      if (retryCount === retryLimit - 1) {
+      if (tryCount === tryLimit - 1) {
         log({message: "Error processing LLM request.", error: error, type: ["error"]});
         throw error;
       }
       else {
-        log({message: `Failed to process LLM request.  Retrying ${retryCount + 1}/${retryLimit}) ...`, error: error, type: ["warn"]});
-        retryCount++;
+        log({message: `Failed to process LLM request.  Retrying ${tryCount + 1}/${tryLimit}) ...`, error: error, type: ["warn"]});
+        tryCount++;
       }
     }
     const data = await response.json();
@@ -77,13 +80,13 @@ export async function processLLMRequest(params) {
     try {
       responseText = responseJsonPath.split('.').reduce((o, i) => o[i], data);
     } catch (error) {
-      if (retryCount === retryLimit - 1) {
+      if (tryCount === tryLimit - 1) {
         log({message: "Error extracting response from JSON.", error: error, type: ["error"]});
         throw error;
       }
       else {
-        log({message: `Failed to extract response from JSON.  Retrying ${retryCount + 1}/${retryLimit}) ...`, error: error, type: ["warn"]});
-        retryCount++;
+        log({message: `Failed to extract response from JSON.  Retrying ${tryCount + 1}/${tryLimit}) ...`, error: error, type: ["warn"]});
+        tryCount++;
       }
     }
     // Use reaosningEndTag game setting (if not empty) to filter all text before and including that tag
@@ -98,14 +101,40 @@ export async function processLLMRequest(params) {
       const start = responseText.indexOf('{');
       const end = responseText.lastIndexOf('}');
       responseText = responseText.substring(start, end + 1);
-      return responseText;
     } catch (error) {
-      if (retryCount === retryLimit - 1) {
+      if (tryCount === tryLimit - 1) {
         log({message: "Error extracting JSON from response text.", error: error, type: ["error"]});
         throw error;
       } else {
-        log({message: `Failed to extract JSON from response text.  Retrying ${retryCount + 1}/${retryLimit}) ...`, error: error, type: ["warn"]});
-        retryCount++;
+        log({message: `Failed to extract JSON from response text.  Retrying ${tryCount + 1}/${tryLimit}) ...`, error: error, type: ["warn"]});
+        tryCount++;
+      }
+    }
+    // Try to convert the response text to JSON
+    try {
+      const responseJSON = JSON.parse(responseText);
+      const endTime = performance.now();
+      // Calculate the generation time and provide string in seconds and possibly minutes.
+      let generationTime = (endTime - startTime) / 1000;
+      let generationTimeString = "N/A";
+      if (generationTime > 60) {
+        const generationTimeMinutes = generationTime / 60;
+        const generationTimeSeconds = generationTime % 60;
+        generationTimeString = generationTimeMinutes.toFixed(0) + " minutes" + (generationTimeSeconds > 0 ? ` and ${generationTimeSeconds.toFixed(0)} seconds` : "");
+      } else {
+        generationTime = generationTime.toFixed(2);
+        generationTimeString = generationTime + " seconds";
+      }
+      const triesString = `${tryCount + 1} of ${tryLimit}`;
+      return {responseJSON: responseJSON, tries: triesString, generationTime: generationTimeString };
+    }
+    catch (error) {
+      if (tryCount === tryLimit - 1) {
+        log({message: "Error parsing response JSON.", error: error, type: ["error"]});
+        throw error;
+      } else {
+        log({message: `Failed to parse response JSON.  Retrying ${tryCount + 1}/${tryLimit}) ...`, error: error, type: ["warn"]});
+        tryCount++;
       }
     }
   }

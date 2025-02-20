@@ -7,8 +7,7 @@ export function registerSettings() {
      * Default payload JSON based on the OpenAI API documentation.
      */
 
-    const defaultPayloadJson = `# Example payload JSON for the OpenAI GPT-4o model.
-{
+    const defaultPayloadJson = `{
   "model": "{{Model}}",
   "messages": [
     {
@@ -78,9 +77,9 @@ export function registerSettings() {
         type: String,
         default: ''
     });
-    game.settings.register('legend-lore', 'generationRetryLimit', {
-        name: "Generation Retry Limit",
-        hint: "Enter the maximum number of retries for text generation.",
+    game.settings.register('legend-lore', 'generationTryLimit', {
+        name: "Generation Try Limit",
+        hint: "Enter the maximum number of tries for text generation.",
         scope: 'world',
         config: true,
         type: Number,
@@ -197,22 +196,6 @@ class JournalEntrySelectionApplication extends FormApplication {
             }));
     }
   }
-/**
- * Hook for modifying the OpenAI API key input field in the Foundry VTT package configuration UI.
- * @param {Application} app - The application instance.
- * @param {JQuery} html - The jQuery object representing the HTML of the app.
- * @param {Object} data - Data provided to the template.
- */
-// Hooks.on('renderPackageConfiguration', (app, html, data) => {
-//     const apiKeyInput = $(html).find('[name="legend-lore.openaiApiKey"]')[0];
-//     if (apiKeyInput) {
-//         apiKeyInput.type = 'password';
-//         apiKeyInput.autocomplete = 'one-time-code';
-//     }
-//     const apiModelsNote = $(html).find("[data-setting-id='legend-lore.models']").find('.notes').first()[0];
-//     apiModelsNote.innerHTML = apiModelsNote.innerHTML.replace("[OpenAI Models]", "<a href='https://platform.openai.com/docs/models/overview'>OpenAI Models</a>");
-//     apiModelsNote.innerHTML = apiModelsNote.innerHTML.replace("[OpenAI Pricing]", "<a href='https://openai.com/pricing'>OpenAI Pricing</a>");
-// });
 /**
  * Hook to place a call-to-action panel right below the h2 header in the settings section of the module to provide the URL to the github page for further guidance
  * @param {Application} app - The application instance.
