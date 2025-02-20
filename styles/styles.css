@@ -11,9 +11,12 @@
 }
 /* CSS */
 
-section.section-legend-lore-highlight-background {
+.locked-tooltip.active.link-matches.link-matches-legend-lore > section.section-legend-lore-highlight-background {
   background: var(--legend-lore-color-twilight);
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
 }
+
 
 button.dialog-button {
   cursor: default;

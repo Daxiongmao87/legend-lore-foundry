@@ -47,7 +47,7 @@ Hooks.once('ready', () => {
                             const highlightedText = view.state.doc.textBetween(from, to);
                             const safeHighlightedText = highlightedText.replace(/'/g, "\\'");
 
-                            const characterLimit = 50;
+                            const characterLimit = 42;
                             const displayedText = highlightedText.length > characterLimit
                                 ? highlightedText.substring(0, characterLimit) + '...'
                                 : highlightedText;
@@ -82,6 +82,11 @@ Hooks.once('ready', () => {
                                     originalTitle: originalTitle,
                                     originalContent: originalContent
                                 });
+                                //destroy the element that matches 'locked-tooltip active link-matches link-matches-legend-lore' classes
+                                let lockedTooltip = document.querySelector('.locked-tooltip.active.link-matches.link-matches-legend-lore');
+                                if (lockedTooltip) {
+                                    lockedTooltip.remove();
+                                }
                             };
                             if (this.tooltip && this.tooltip.classList.contains('link-matches-legend-lore')) {
                                 this.tooltip.innerHTML = gptGenerateButtonContent; // Overwrite content
