@@ -76,13 +76,25 @@ Install just like any Foundry VTT module:
 4. Click Install.
 
 ## Configuration
-### Journal Entry Templates
+Below are the configuration options for the module:
+1. **Journal Entry Templates:** Choose which journal compendiums to use for templates.
+2. **Enable HTTPS:** Enable this if your service requires HTTPS.
+3. **Text Generation API URL:** This is the URL for the API you are using.  This can be a local or remote URL.
+4. **API Key
+5. **Models:** Providing a comma-delimited list of models will allow you to switch between models when generating content.  This is useful if you have multiple models available to you.
+6. **Payload JSON:** This sets the structure of the JSON payload that is sent to the AI model.  The default is set to OpenAI's expected JSON format.  You can customize this to fit the requirements of the AI model you are using.
+7. **Response JSON Path:** This is the path to the content in the JSON response from the AI model.  This is used to extract the content from the response.
+8. **Reasoning End Tag:** This is the tag that the module will use to determine the end of the reasoning section of the generated content.  This is used to filter the reasoning output out of the generated content.
+9. **Generation Try Limit:** This is the number of times the module will attempt to generate content before giving up.  This is useful if the AI model is not responding or is returning errors.
+10. **Global Context:** This is the global context that is sent to the AI model with every request.  This is useful for setting up a global context that is used for every request.
+
+### 1. Journal Entry Templates
 You can choose which journal compendiums to use for templates.
-### Enable HTTPS
+### 2. Enable HTTPS
 Enable this if your service requires HTTPS.
 
 * Note, if you're self-hosting, and are using a self-signed certificate, this will not work.  You'll need to either have an http endpoint or a valid certificate for https
-### Text Generation API URL
+### 3. Text Generation API URL
 This is the URL for the API you are using.  This can be a local or remote URL.
 
 #### Endpoint Examples
@@ -108,13 +120,13 @@ This is the URL for the API you are using.  This can be a local or remote URL.
 
 * Note: If your API endpoint is not listed here and you've successfully used it with this module, please submit an issue (or PR) to have it added to the list.
 
-### API Key (Optional)
+### 4. API Key (Optional)
 This is the API key for the service you are using.  This is optional, but some services require it.
 
-### Models
+### 5. Models
 Providing a comma-delimited list of models will allow you to switch between models when generating content.  This is useful if you have multiple models available to you.
 
-### Payload JSON
+### 6. Payload JSON
 This sets the structure of the JSON payload that is sent to the AI model.  The default is set to OpenAI's expected JSON format.  You can customize this to fit the requirements of the AI model you are using.
 
 The following placeholders are for the module to replace with the appropriate values:
@@ -181,7 +193,7 @@ The following placeholders are for the module to replace with the appropriate va
 
 * Note: If your API endpoint is not listed here and you've successfully used it with this module, please submit an issue (or PR) to have it added to the list.
 
-### Response JSON Path
+### 7. Response JSON Path
 This is the path to the content in the JSON response from the AI model.  This is used to extract the content from the response.
 
 #### Response JSON Path Examples
@@ -206,19 +218,16 @@ This is the path to the content in the JSON response from the AI model.  This is
 
 * Note: If your API endpoint is not listed here and you've successfully used it with this module, please submit an issue (or PR) to have it added to the list.
 
-### Reasoning End Tag
+### 8. Reasoning End Tag
 This is the tag that the module will use to determine the end of the reasoning section of the generated content.  This is used to filter the reasoning output out of the generated content.
 
-### Generation Try Limit
+### 9. Generation Try Limit
 This is the number of times the module will attempt to generate content before giving up.  This is useful if the AI model is not responding or is returning errors.
 
-### Global Context
+### 10. Global Context
 This is the global context that is sent to the AI model with every request.  This is useful for setting up a global context that is used for every request.
 
-## Usage
-
-With the module enabled, you can use the provided UI tools and extensions within Foundry VTT to generate and manage AI-assisted content. The module integrates directly with the journal system and other Foundry VTT features, offering a seamless and enriching gameplay experience.
-
+___
 [badge_version]: https://img.shields.io/github/v/tag/daxiongmao87/legend-lore-foundry?label=Version&style=plastic&color=2577a1
 [badge_issues]: https://img.shields.io/github/issues/daxiongmao87/legend-lore-foundry?label=Issues&style=plastic
 [badge_downloads]: https://img.shields.io/github/downloads/daxiongmao87/legend-lore-foundry/total?label=Downloads&style=plastic
