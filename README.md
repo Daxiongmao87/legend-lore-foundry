@@ -67,21 +67,25 @@
 
 **NOTE: Generation has costs.  Please be aware that generation can be expensive, especially with paid APIs.  Please research the costs associated with using these services.
 
-## Installation and Setup
+## Installation
 
-After installing the module, navigate to the module settings in Foundry VTT to configure the desired settings for AI models and content generation preferences.
+Install just like any Foundry VTT module:
+1. Open the Add-on Modules tab in the Configuration and Setup dialog.
+2. Click Install Module.
+3. Search for "Legend Lore" in the module list and click Install.  Alternatively, paste the following URL into the Manifest URL field: `https://github.com/daxiongmao87/legend-lore-foundry/releases/latest/download/module.json`
+4. Click Install.
 
-### Configuration
-#### Journal Entry Templates
+## Configuration
+### Journal Entry Templates
 You can choose which journal compendiums to use for templates.
-#### Enable HTTPS
+### Enable HTTPS
 Enable this if your service requires HTTPS.
 
 * Note, if you're self-hosting, and are using a self-signed certificate, this will not work.  You'll need to either have an http endpoint or a valid certificate for https
-#### Text Generation API URL
+### Text Generation API URL
 This is the URL for the API you are using.  This can be a local or remote URL.
 
-##### Endpoint Examples
+#### Endpoint Examples
 <div>
     <details>
         <summary>OpenAI API</summary>
@@ -103,18 +107,21 @@ This is the URL for the API you are using.  This can be a local or remote URL.
     </details>
 
 * Note: If your API endpoint is not listed here and you've successfully used it with this module, please submit an issue (or PR) to have it added to the list.
-#### API Key (Optional)
+
+### API Key (Optional)
 This is the API key for the service you are using.  This is optional, but some services require it.
-#### Models
+
+### Models
 Providing a comma-delimited list of models will allow you to switch between models when generating content.  This is useful if you have multiple models available to you.
-#### Payload JSON
+
+### Payload JSON
 This sets the structure of the JSON payload that is sent to the AI model.  The default is set to OpenAI's expected JSON format.  You can customize this to fit the requirements of the AI model you are using.
 
 The following placeholders are for the module to replace with the appropriate values:
 * `{{Model}}` - The model selected within the generation dialog
 * `{{GenerationContext}}` - The context input submitted to
 
-##### Template Examples
+#### Template Examples
 <details>
     <summary>OpenAI API</summary>
     <pre>
@@ -169,13 +176,15 @@ The following placeholders are for the module to replace with the appropriate va
       }
     }
     </pre>
+</details>
+:q
 
 * Note: If your API endpoint is not listed here and you've successfully used it with this module, please submit an issue (or PR) to have it added to the list.
 
-#### Response JSON Path
+### Response JSON Path
 This is the path to the content in the JSON response from the AI model.  This is used to extract the content from the response.
 
-##### Response JSON Path Examples
+#### Response JSON Path Examples
 <details>
     <summary>OpenAI API</summary>
     <pre>
@@ -197,13 +206,13 @@ This is the path to the content in the JSON response from the AI model.  This is
 
 * Note: If your API endpoint is not listed here and you've successfully used it with this module, please submit an issue (or PR) to have it added to the list.
 
-#### Reasoning End Tag
+### Reasoning End Tag
 This is the tag that the module will use to determine the end of the reasoning section of the generated content.  This is used to filter the reasoning output out of the generated content.
 
-#### Generation Try Limit
+### Generation Try Limit
 This is the number of times the module will attempt to generate content before giving up.  This is useful if the AI model is not responding or is returning errors.
 
-#### Global Context
+### Global Context
 This is the global context that is sent to the AI model with every request.  This is useful for setting up a global context that is used for every request.
 
 ## Usage
