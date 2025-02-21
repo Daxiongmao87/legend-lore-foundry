@@ -101,14 +101,13 @@ jobs:
         run: |
           echo "::set-output name=minimum::$(jq -r '.compatibility.minimum' module.json)"
           echo "::set-output name=verified::$(jq -r '.compatibility.verified' module.json)"
-          echo "::set-output name=maximum::$(jq -r '.compatibility.maximum' module.json)"
       - name: Update FoundryVTT Package
         run: |
           curl -X POST https://api.foundryvtt.com/_api/packages/release_version/ \
             -H "Content-Type: application/json" \
             -H "Authorization: ${{ secrets.FOUNDRY_API_KEY }}" \
             -d '{
-              "id": "example-module",
+              "id": "legend-lore",
               "dry-run": false,
               "release": {
                 "version": "${{ env.VERSION }}",
@@ -117,6 +116,6 @@ jobs:
                 "compatibility": {
                   "minimum": "${{ steps.module_json.outputs.minimum }}",
                   "verified": "${{ steps.module_json.outputs.verified }}",
-                  "maximum": "${{ steps.module_json.outputs.maximum }}"
                 }
-              }'
+              }
+            }'

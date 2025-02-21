@@ -29,7 +29,7 @@
   ],
   "id": "legend-lore",
   "compatibility": {
-    "minimum": "0.11.0",
-    "verified": "0.12.331"
+    "minimum": "11.0",
+    "verified": "12.331"
   }
 }
