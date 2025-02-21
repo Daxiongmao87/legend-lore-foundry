@@ -24,7 +24,7 @@ export function registerSettings() {
   "response_format": {
     "type": "json_schema",
     "json_schema": {
-      "name": "html_schema"
+      "name": "html_schema",
       "schema": {{ContentSchema}}
     }
   }
