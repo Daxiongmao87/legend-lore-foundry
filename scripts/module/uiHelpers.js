@@ -346,18 +346,28 @@ async function handleGenerate(options = {
         });
         break;
       } catch (error) {
-        log({
-          message: "Error processing LLM request.",
-          error: error,
-          type: ["error"],
-          display: ["error", "ui"]
-        });
+        if (tries === maxTries) {
+          log({
+            message: "Error processing LLM request. Maximum tries reached (Tries: " + tries + " of " + maxTries + ").",
+            error: error,
+            type: ["error"],
+            display: ["error", "ui"]
+          });
+        } else {
+          log({
+            message: "Error processing LLM request. Retrying (Try " + tries + " of " + maxTries + ")...",
+            error: error,
+            type: ["warn"],
+            display: ["warn", "ui"]
+          });
+        }
       }
     }
     const endTime = performance.now();
     // Format should be "x seconds, or x minutes and x seconds"
     const generationTime = Math.floor((endTime - startTime) / 1000);
     let generationTimeString;
+    let fail = false;
     if (generationTime > 60) {
       const minutes = Math.floor(generationTime / 60);
       const seconds = Math.floor(generationTime % 60);
@@ -367,16 +377,12 @@ async function handleGenerate(options = {
       generationTimeString = `${generationTime} seconds`;
     }
     if (tries === maxTries) {
-      log({
-        message: "Generation failed after maximum tries.",
-        type: ["error"],
-        display: ["error", "ui"]
-      });
-      text = "Generation failed after maximum tries.";
+      fail = true;
+      text = "Generation failed after maximum tries. (Tries: " + tries + " of " + maxTries + ")";
     }
     else {
       try {
-        text = ElementHandler.jsonToHtml(data);
+        text = ElementHandler.jsonToHtml(data).outerHTML;
       } catch (error) {
         log({
           message: "Error converting JSON to HTML.",
@@ -387,7 +393,7 @@ async function handleGenerate(options = {
       }
     }
     try {
-        updateUIAfterResponse(options.html, text, tries, maxTries, generationTimeString);
+        updateUIAfterResponse(options.html, text, tries, maxTries, generationTimeString, fail);
     } catch (error) {
         log({
           message: "Error updating UI after response.",
@@ -406,16 +412,19 @@ async function handleGenerate(options = {
  * @param {HTMLElement} returnedContent - The HTML element containing the generated content.
  * @param {Object} tokens - Token usage information.
  */
-function updateUIAfterResponse(html, returnedContent, tryCount, maxTries, generationTime) {
-    updatePreviewStyle("generation-preview");
-    $(html).find('.legend-lore.generation-preview').html(returnedContent.outerHTML);
+function updateUIAfterResponse(html, returnedContent, tryCount, maxTries, generationTime, fail) {
+    if (fail) {
+    } else {
+      updatePreviewStyle("generation-preview");
+    }
+    $(html).find('.legend-lore.generation-preview').html(returnedContent);
     if (tryCount > 1 ) {
       $(html).find('#generation-metrics').html(`<strong>Generation Time: ${generationTime} (${tryCount}/${maxTries} tries)</strong>`);
     } else {
       $(html).find('#generation-metrics').html(`<strong>Generation Time: ${generationTime}</strong>`);
     }
     $(html).find('#response-container').show();
-    $(html).find(".dialog-button.generate")[0].innerHTML = `<i class="fas fa-wand-sparkle"></i> Generate`;
+    $(html).find(".dialog-button.generate")[0].innerHTML = `<i class="fas fa-wand-sparkles"></i> Generate`;
     $(html).find(".dialog-button.generate")[0].classList.remove('generating');
 }
 
