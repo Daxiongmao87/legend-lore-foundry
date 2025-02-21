@@ -15,7 +15,7 @@
     {
       "name": "journal-entry-templates",
       "label": "Journal Entry Templates",
-      "path": "./packs/compendiums/templates.db",
+      "path": "./packs/compendiums/templates",
       "type": "JournalEntry"
     }
   ],
