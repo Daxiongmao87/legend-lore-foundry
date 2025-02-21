@@ -196,7 +196,7 @@ The following placeholders are for the module to replace with the appropriate va
     </pre>
 </details>
 
-* Note: If your API endpoint is not listed here and you've successfully used it with this module, please submit an issue (or PR) to have it added to the list.
+* Note: If your API endpoint is not listed here and you've successfully used it with this module, please submit an issue (or PR) to have it added to the list.  Discussions can be held here: https://github.com/Daxiongmao87/legend-lore-foundry/discussions/categories/api-endpoints
 
 ### 7. Response JSON Path
 This is the path to the content in the JSON response from the AI model.  This is used to extract the content from the response.
