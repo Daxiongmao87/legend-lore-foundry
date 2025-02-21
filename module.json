@@ -1,7 +1,7 @@
 {
   "title": "Legend Lore",
   "description": "An LLM-powered journal content generator.",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "url": "https://github.com/Daxiongmao87/legend-lore-foundry",
   "manifest": "https://github.com/Daxiongmao87/legend-lore-foundry/releases/latest/download/module.json",
   "download": "https://github.com/Daxiongmao87/legend-lore-foundry/releases/latest/download/module.zip",
@@ -15,7 +15,7 @@
     {
       "name": "journal-entry-templates",
       "label": "Journal Entry Templates",
-      "path": "./packs/compendiums/templates.db",
+      "path": "./packs/compendiums/templates",
       "type": "JournalEntry"
     }
   ],
