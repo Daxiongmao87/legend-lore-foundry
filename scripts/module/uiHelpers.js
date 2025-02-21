@@ -419,7 +419,7 @@ function updateUIAfterResponse(html, returnedContent, tryCount, maxTries, genera
     }
     $(html).find('.legend-lore.generation-preview').html(returnedContent);
     if (tryCount > 1 ) {
-      $(html).find('#generation-metrics').html(`<strong>Generation Time: ${generationTime} (${tryCount}/${maxTries} tries)</strong>`);
+      $(html).find('#generation-metrics').html(`<strong>Generation Time: ${generationTime} (Tries: ${tryCount} of ${maxTries})</strong>`);
     } else {
       $(html).find('#generation-metrics').html(`<strong>Generation Time: ${generationTime}</strong>`);
     }
