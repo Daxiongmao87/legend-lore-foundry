@@ -26,7 +26,7 @@ jobs:
           VERSION=${GITHUB_REF#refs/heads/}
           VERSION=${VERSION%-release}
           jq ".version = \"$VERSION\"" module.json | sponge module.json
-          
+
       - name: Commit Changes
         run: |
           git config --local user.email "action@github.com"
@@ -34,7 +34,7 @@ jobs:
           git add module.json
           git commit -m "Update manifest and download links in module.json"
           git push
-          
+
       - name: Define Version and Tag
         run: |
           echo "VERSION=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
@@ -96,3 +96,27 @@ jobs:
           asset_path: ./module.zip
           asset_name: module.zip
           asset_content_type: application/zip
+      - name: Get module.json compatibility values
+        id: module_json
+        run: |
+          echo "::set-output name=minimum::$(jq -r '.compatibility.minimum' module.json)"
+          echo "::set-output name=verified::$(jq -r '.compatibility.verified' module.json)"
+          echo "::set-output name=maximum::$(jq -r '.compatibility.maximum' module.json)"
+      - name: Update FoundryVTT Package
+        run: |
+          curl -X POST https://api.foundryvtt.com/_api/packages/release_version/ \
+            -H "Content-Type: application/json" \
+            -H "Authorization: ${{ secrets.FOUNDRY_API_KEY }}" \
+            -d '{
+              "id": "example-module",
+              "dry-run": false,
+              "release": {
+                "version": "${{ env.VERSION }}",
+                "manifest": "http://github.com/daxiongmao87/legend-lore-foundry/releases/latest/download/module.json",
+                "notes": "https://github.com/daxiongmao87/legend-lore-foundry/releases/tag/${{ env.TAG_NAME }}",
+                "compatibility": {
+                  "minimum": "${{ steps.module_json.outputs.minimum }}",
+                  "verified": "${{ steps.module_json.outputs.verified }}",
+                  "maximum": "${{ steps.module_json.outputs.maximum }}"
+                }
+              }'
