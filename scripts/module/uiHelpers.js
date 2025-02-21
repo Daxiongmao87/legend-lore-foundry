@@ -1,7 +1,5 @@
-import { processGPTRequest } from "./api.js";
-import { createNewJournalEntryPage } from "./journalManager.js";
-import { ElementHandler } from './elementTransformer.js';
-import { log } from './utils.js';
+import { processLLMRequest } from "./api.js"; import { createNewJournalEntryPage } from "./journalManager.js";
+import { ElementHandler, log, jsonToSchema } from './utils.js';
 /**
  * Opens a dialog in the Foundry VTT UI based on the provided options. This dialog is used for user interactions related to AI content generation.
  * @param {Object} options - The options for the dialog.
@@ -14,9 +12,9 @@ import { log } from './utils.js';
  */
 export async function openDialog(options = {
   type,
-  highlightedText, 
-  journalEntryId, 
-  originalTitle, 
+  highlightedText,
+  journalEntryId,
+  originalTitle,
   originalContent
 }) {
   const type = options.type;
@@ -40,7 +38,7 @@ export async function openDialog(options = {
     contextPlaceholder = "REQUIRED: Add information or instruction for the AI model to use as inspiration for generating this entry.";
   }
   dialogTemplate = await renderTemplate('modules/legend-lore/templates/dialog.html', {
-    contextName: contextName, 
+    contextName: contextName,
     contextPlaceholder: contextPlaceholder
   });
   let d = new Dialog({
@@ -70,12 +68,13 @@ export async function openDialog(options = {
       },
       default: "cancel",
       render: async (html) => dialogHelper({
-        html: html, 
+        html: html,
         type: type,
-        highlightedText: highlightedText, 
-        journalEntryName: journalEntryName, 
-        originalTitle: originalTitle, 
-        originalContent: originalContent, 
+        model: html.find('#llm-model').val(),
+        highlightedText: highlightedText,
+        journalEntryName: journalEntryName,
+        originalTitle: originalTitle,
+        originalContent: originalContent,
         journalEntryId: journalEntryId
       })
     }).render(true, {
@@ -95,13 +94,13 @@ export async function openDialog(options = {
  * @param {string} [options.journalEntryId] - The ID of the journal entry.
  */
 async function dialogHelper(options = {
-  html, 
+  html,
   type,
-  highlightedText, 
+  highlightedText,
   pageName,
-  journalEntryName, 
-  originalTitle, 
-  originalContent, 
+  journalEntryName,
+  originalTitle,
+  originalContent,
   journalEntryId
 }) {
   await populateJournalDropdown(options.journalEntryId);
@@ -127,15 +126,15 @@ async function dialogHelper(options = {
   options.html.find(".legend-lore.entry-title").val(options.highlightedText);
   generateButton.click(function() {
       handleGenerate(options = {
-        html: options.html, 
+        html: options.html,
         type: options.type,
-        highlightedText: options.highlightedText, 
-        journalEntryName: options.journalEntryName, 
-        originalTitle: options.originalTitle, 
+        highlightedText: options.highlightedText,
+        journalEntryName: options.journalEntryName,
+        originalTitle: options.originalTitle,
         globalContext: (options.html.find('.global-context')[0].value) ? game.settings.get('legend-lore','globalContext') : '',
-        originalContent: (options.html.find('.originating-content')[0].value) ? options.originalContent : '', 
+        originalContent: (options.html.find('.originating-content')[0].value) ? options.originalContent : '',
         journalEntryId: options.journalEntryId
-      }); 
+      });
   });
   $(options.html).find('#entry-template').on('change', function() {
     if (this.value === "null" ) {
@@ -181,25 +180,12 @@ async function updateTemplatePreview(journalDataString) {
     $('.legend-lore.template-preview').html(templateContent.text.content);
 }
 /**
- * Populates the model dropdown in the dialog with available GPT models from the module settings.
- */
-function populateModels() {
-  const dropdown = document.getElementById("gpt-model");
-  const models= game.settings.get('legend-lore','models').split(' ');
-  for (const model of models) {
-    const option = document.createElement("option");
-    option.value = model;
-    option.text = model;
-    dropdown.add(option);
-  }
-}
-/**
  * Populates the journal entry template dropdown in the dialog with entries from the selected compendiums.
  */
 async function populateJournalEntryTemplates() {
   const compendiumNames = game.settings.get('legend-lore', 'journalEntryTemplates');
   const dropdown = document.getElementById("entry-template");
-  clearDropdownOptions(dropdown); 
+  clearDropdownOptions(dropdown);
   for (const compendiumName of compendiumNames) {
       const journalEntries = await getJournalEntriesFromCompendium(compendiumName);
       for (const journalEntry of journalEntries) {
@@ -232,10 +218,10 @@ function clearDropdownOptions(dropdown) {
 function addPagesToDropdown(pages, journalEntry, dropdown) {
   for (const page of pages) {
       const option = document.createElement("option");
-      option.value = JSON.stringify({ 
-        pack: page.pack, 
+      option.value = JSON.stringify({
+        pack: page.pack,
         journalEntryName: journalEntry.name,
-        journalEntryPageName: page.name 
+        journalEntryPageName: page.name
       });
       option.text = `${journalEntry.name}: ${page.name}`;
       dropdown.add(option);
@@ -256,7 +242,7 @@ async function getJournalEntriesFromCompendium(compendiumName) {
       })
       return [];
   }
-  await compendium.getIndex(); 
+  await compendium.getIndex();
   const journalEntries = [];
   for (const indexEntry of compendium.index) {
     const entry = await compendium.getDocument(indexEntry._id);
@@ -285,82 +271,178 @@ async function getJournalEntryPages(compendiumName, journalEntryName, pageName) 
 
 /**
  * Handles the generation of AI content based on the user's input and selections in the dialog.
- * @param {Object} options - The options and context for generating AI content.
- * @param {JQuery} options.html - The jQuery object representing the HTML of the dialog.
- * @param {string} options.type - The type of content generation.
- * @param {string} options.highlightedText - The text highlighted for content generation.
- * @param {string} options.journalEntryName - The name of the journal entry.
- * @param {string} options.originalTitle - The original title of the content.
- * @param {Object} options.originalContent - The original content of the journal entry or page.
- * @param {string} options.globalContext - Global context information for content generation.
- * @param {string} options.journalEntryId - The ID of the journal entry.
+ * @param {Object} options - The options for content generation.
  */
 async function handleGenerate(options = {
-  html, 
+  html,
   type,
-  highlightedText, 
-  journalEntryName, 
-  originalTitle, 
-  originalContent, 
+  highlightedText,
+  journalEntryName,
+  originalTitle,
+  originalContent,
   globalContext,
   journalEntryId
 }) {
-    $(options.html).find(".dialog-button.generate")[0].innerHTML=`<i class="fas fa-sparkle fa-spin"></i> Generating...`;
+    // Update the UI: disable form elements and change button state.
+    const genButton = $(options.html).find(".dialog-button.generate")[0];
+    genButton.innerHTML = `<i class="fas fa-spinner-third fa-spin"></i> Generating...`;
+    // add a 'generating' class
+    genButton.classList.add('generating');
     const formElements = $(options.html).find('input, textarea, button, a');
     formElements.prop('disabled', true);
-    const model = $(options.html).find(".legend-lore.gpt-model")[0].value;
-    let templateContentJSON = ''
-    templateContentJSON = ElementHandler.htmlToJson($(options.html).find('.legend-lore.template-preview')[0]);
-    let context, additionalContext, subject;
-    if(options.type === "context"){
-      subject = options.highlightedText;
-      context=ElementHandler.htmlToJson(options.originalContent.activeElement);
+    const model = $(options.html).find(".legend-lore.llm-model")[0].value;
+    let entryTitle, contextInput, additionalContext;
+    if(options.type === "context") {
+      entryTitle = options.highlightedText;
+      contextInput = JSON.stringify(ElementHandler.htmlToJson(options.originalContent.documentElement));
       additionalContext = $(options.html).find(".legend-lore.context")[0].value;
     } else if (options.type === "generate") {
-      subject = $(options.html).find(".legend-lore.entry-title")[0].value;
-      context=$(options.html).find(".legend-lore.context")[0].value;
+    // Assemble the user input from title and context.
+      entryTitle = $(options.html).find(".legend-lore.entry-title")[0].value;
+      contextInput = $(options.html).find(".legend-lore.context")[0].value;
     }
-    let data = await processGPTRequest({
-      type: options.type,
-      subject: subject, 
-      journalEntryName: options.journalEntryName, 
-      context: context, 
-      originalTitle: options.originalTitle, 
-      context: context, 
-      globalContext: context,
-      additionalContext: additionalContext,
-      journalEntryId: options.journalEntryId, 
-      templateContent: templateContentJSON, 
-      model
-    });
-    try {
-        const content = JSON.parse(data.apiResponseContent.choices[0].message.content.trim().replace(/###(.|\n)*/gm, '').replace(/```(.|\n)*/gm, ''));  // helps remove tailing info from some local models
-        let jsonObject = content;
-        const text = ElementHandler.jsonToHtml(content.output);
-        updateUIAfterResponse(options.html, text, data.apiResponseContent.usage);
-    } catch (error) {
+
+
+    if(options.type === "context") {
+    }
+
+    // Get the content template as JSON from the HTML conversion.
+    const contentTemplateObj = ElementHandler.htmlToJson($(options.html).find('.legend-lore.template-preview')[0]);
+    // contentTemplateInstructions needs to include the journalEntryName, originalTitle, originalContent, and globalContext in a way that the LLM can understand.
+    let contentTemplateInstructions = `
+      Journal Name: ${options.journalEntryName},
+      Journal Entry Title: ${entryTitle},
+      Original Content: ${contextInput}`
+    if (options.globalContext) {
+      contentTemplateInstructions += `, Global Context: ${options.globalContext}`;
+    }
+    if (additionalContext) {
+      contentTemplateInstructions += `, Additional Context: ${additionalContext}`;
+    }
+   //make string JSON-friendly
+    contentTemplateInstructions+=`, JSON Format: ${JSON.stringify(contentTemplateObj)}`;
+    contentTemplateInstructions = JSON.stringify(contentTemplateInstructions);
+
+   // JSON.stringify(contentTemplateObj);
+    const contentTemplateSchema = JSON.stringify(jsonToSchema(contentTemplateObj));
+
+    // Call processLLMRequest with userInput and contentTemplate.
+    let data;
+    //start async timer
+    const startTime = performance.now();
+    const maxTries = game.settings.get('legend-lore','generationTryLimit');
+    let tries = 0;
+    let text
+    while (tries < maxTries) {
+      tries++;
+      if (tries > 1) {
+        genButton.innerHTML = `<i class="fas fa-spinner-third fa-spin"></i> Generating (Try ${tries} of ${maxTries})...`;
+      }
+      try {
+        data = await processLLMRequest({
+            model: model,
+            contentTemplateInstructions: contentTemplateInstructions,
+            contentTemplateSchema: contentTemplateSchema
+        });
+        break;
+      } catch (error) {
+        if (tries === maxTries) {
+          log({
+            message: "Error processing LLM request. Maximum tries reached (Tries: " + tries + " of " + maxTries + ").",
+            error: error,
+            type: ["error"],
+            display: ["error", "ui"]
+          });
+        } else {
+          log({
+            message: "Error processing LLM request. Retrying (Try " + tries + " of " + maxTries + ")...",
+            error: error,
+            type: ["warn"],
+            display: ["warn", "ui"]
+          });
+        }
+      }
+    }
+    const endTime = performance.now();
+    // Format should be "x seconds, or x minutes and x seconds"
+    const generationTime = Math.floor((endTime - startTime) / 1000);
+    let generationTimeString;
+    let fail = false;
+    if (generationTime > 60) {
+      const minutes = Math.floor(generationTime / 60);
+      const seconds = Math.floor(generationTime % 60);
+      generationTimeString = `${minutes} minutes and ${seconds} seconds`;
+    }
+    else {
+      generationTimeString = `${generationTime} seconds`;
+    }
+    if (tries === maxTries) {
+      fail = true;
+      text = "Generation failed after maximum tries. (Tries: " + tries + " of " + maxTries + ")";
+    }
+    else {
+      try {
+        text = ElementHandler.jsonToHtml(data).outerHTML;
+      } catch (error) {
         log({
-          message:"Error parsing JSON.",
+          message: "Error converting JSON to HTML.",
           error: error,
           type: ["error"],
           display: ["error", "ui"]
-        })
+        });
+      }
+    }
+    try {
+        updateUIAfterResponse(options.html, text, tries, maxTries, generationTimeString, fail);
+    } catch (error) {
+        log({
+          message: "Error updating UI after response.",
+          error: error,
+          type: ["error"],
+          display: ["error", "ui"]
+        });
     }
     formElements.prop('disabled', false);
-  }
-/**
- * Updates the UI elements of the dialog after receiving a response from the AI content generation process.
- * @param {JQuery} html - The jQuery object representing the HTML of the dialog.
- * @param {HTMLElement} returnedContent - The HTML element containing the generated content to be displayed.
- * @param {Object} tokens - Information about the token usage of the generated content.
- */
-function updateUIAfterResponse(html, returnedContent, tokens) {
-    updatePreviewStyle("generation-preview");
-    $(html).find('.legend-lore.generation-preview').html(returnedContent);
-    $(html).find('#token-count').html(`<strong>Tokens sent: ${tokens.prompt_tokens}, Tokens received: ${tokens.completion_tokens}, Total Tokens Used: ${tokens.total_tokens}</strong>`);
-    $(html).find('#response-container').show();
-    $(html).find(".dialog-button.generate")[0].innerHTML=`<i class="fas fa-sparkle"></i> Generate`;
 }
+
+
+/**
+ * Updates the UI after receiving a response from the LLM.
+ * @param {JQuery} html - The jQuery object for the dialog.
+ * @param {HTMLElement} returnedContent - The HTML element containing the generated content.
+ * @param {Object} tokens - Token usage information.
+ */
+function updateUIAfterResponse(html, returnedContent, tryCount, maxTries, generationTime, fail) {
+    if (fail) {
+    } else {
+      updatePreviewStyle("generation-preview");
+    }
+    $(html).find('.legend-lore.generation-preview').html(returnedContent);
+    if (tryCount > 1 ) {
+      $(html).find('#generation-metrics').html(`<strong>Generation Time: ${generationTime} (${tryCount}/${maxTries} tries)</strong>`);
+    } else {
+      $(html).find('#generation-metrics').html(`<strong>Generation Time: ${generationTime}</strong>`);
+    }
+    $(html).find('#response-container').show();
+    $(html).find(".dialog-button.generate")[0].innerHTML = `<i class="fas fa-wand-sparkles"></i> Generate`;
+    $(html).find(".dialog-button.generate")[0].classList.remove('generating');
+}
+
+
+/**
+ * Populates the model dropdown in the dialog with available LLM models from the module settings.
+ */
+function populateModels() {
+  const dropdown = document.getElementById("llm-model");
+  const models= game.settings.get('legend-lore','models').split(',').map(model => model.trim());
+  for (const model of models) {
+    const option = document.createElement("option");
+    option.value = model;
+    option.text = model;
+    dropdown.add(option);
+  }
+}
+
 /**
  * Populates a dropdown with journal entries available in the game. Used for selecting a journal entry in the dialog.
  * @param {string|null} [selectedJournalEntryId=null] - The ID of the journal entry to be pre-selected in the dropdown.

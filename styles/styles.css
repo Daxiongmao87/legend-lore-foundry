@@ -1,0 +1,173 @@
+/* Colors */
+:root {
+  --legend-lore-color-violet-glow: #f4d1f9;
+  --legend-lore-color-pale-violet-transparent: rgb(150 2 255 / 80%);
+  --legend-lore-color-bright-violet-transparent: rgb(180 96 255 / 80%);
+  --legend-lore-color-violet: #3b0075;
+  --legend-lore-color-dark-violet: #2a004e;
+  --legend-lore-color-very-dark-violet: #1a002e;
+  --legend-lore-color-silver: #d3d3d3;
+  --legend-lore-color-twilight: linear-gradient(0deg, var(--legend-lore-color-dark-violet) 0%, #000 100%);
+}
+/* CSS */
+
+.locked-tooltip.active.link-matches.link-matches-legend-lore > section.section-legend-lore-highlight-background {
+  background: var(--legend-lore-color-twilight);
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+
+button.dialog-button {
+  cursor: default;
+}
+
+#tooltip.link-matches a.content-link.generate-entry-link,
+#tooltip.link-matches a.content-link.generate-entry-link i,
+.locked-tooltip.link-matches a.content-link.generate-entry-link,
+.locked-tooltip.link-matches a.content-link.generate-entry-link i,
+h4.section-legend-lore-highlight-label {
+  border-radius: 3px;
+}
+
+#tooltip.link-matches a.content-link.generate-entry-link,
+#tooltip.link-matches a.content-link.generate-entry-link i,
+.locked-tooltip.link-matches a.content-link.generate-entry-link,
+.locked-tooltip.link-matches a.content-link.generate-entry-link i,
+h4.section-legend-lore-highlight-label,
+button.generate-entry-link.content-link.content-link-legend-lore,
+button.generate-entry,
+button.dialog-button.generate:enabled {
+  color: white;
+  text-shadow: 0 0 6px white;
+  border-color: white;
+}
+
+button.generate-entry-link.content-link.content-link-legend-lore:hover,
+button.dialog-button.generate:enabled:hover,
+button.generate-entry:enabled:hover {
+  transform: scale(1.05);
+  transition: transform 0.5s, box-shadow 0.25s;
+  box-shadow: 0 0 15px var(--legend-lore-color-violet-glow);
+  background: linear-gradient(
+    to top,
+    var(--legend-lore-color-violet-glow) 0%,
+    var(--legend-lore-color-pale-violet-transparent) 5%,
+    var(--legend-lore-color-violet) 30%,
+    var(--legend-lore-color-dark-violet) 70%,
+    var(--legend-lore-color-violet) 90%,
+    var(--legend-lore-color-violet-glow) 99%
+  );
+}
+
+button.generate-entry-link.content-link.content-link-legend-lore:active,
+button.dialog-button.generate:enabled,
+button.generate-entry:enabled {
+  transform: scale(1.0);
+  transition: transform 0.5s, box-shadow 0.25s;
+}
+
+.content-link.generate-entry-link,
+button.generate-entry,
+button.dialog-button.generate:enabled,
+button.dialog-button.generating {
+  position: relative;
+  background: linear-gradient(
+    to bottom,
+    var(--legend-lore-color-pale-violet-transparent) 0%,
+    var(--legend-lore-color-violet) 30%,
+    #000 70%,
+    var(--legend-lore-color-violet) 90%,
+    var(--legend-lore-color-pale-violet-transparent) 100%
+  );
+  overflow: hidden;
+}
+
+.generate-entry-link::before,
+button.generate-entry::before,
+button.dialog-button.generate:enabled::before,
+button.dialog-button.generating::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 80% 12%,  rgba(255,255,255,0.5) 0%,  transparent 1%),
+    radial-gradient(circle at 5% 15%,  rgba(255,255,255,0.5) 0%,  transparent 1.5%),
+    radial-gradient(circle at 50% 26%,  rgba(255,255,255,0.5) 0%,  transparent 2%),
+    radial-gradient(circle at 80% 74%,  rgba(255,255,255,0.5) 0%,  transparent 2.5%),
+    radial-gradient(circle at 70% 7%,  rgba(255,255,255,0.5) 0%,  transparent 3%),
+    radial-gradient(circle at 10% 53%,  rgba(255,255,255,0.5) 0%,  transparent 2.5%),
+    radial-gradient(circle at 95% 25%,  rgba(255,255,255,0.5) 0%,  transparent 2%),
+    radial-gradient(circle at 40% 17%,  rgba(255,255,255,0.5) 0%,  transparent 1.5%),
+    radial-gradient(circle at 60% 83%,  rgba(255,255,255,0.5) 0%,  transparent 1%),
+    radial-gradient(circle at 20% 18%,  rgba(255,255,255,0.5) 0%,  transparent 1.5%),
+    radial-gradient(circle at 80% 59%,  rgba(255,255,255,0.5) 0%,  transparent 2%),
+    radial-gradient(circle at 30% 74%,  rgba(255,255,255,0.5) 0%,  transparent 2.5%),
+    radial-gradient(circle at 32% 80%,  rgba(255,255,255,0.5) 0%,  transparent 3%),
+    radial-gradient(circle at 80% 36%,  rgba(255,255,255,0.5) 0%,  transparent 2.5%),
+    radial-gradient(circle at 35% 44%,  rgba(255,255,255,0.5) 0%,  transparent 2%),
+    radial-gradient(circle at 45% 49%,  rgba(255,255,255,0.5) 0%,  transparent 1.5%),
+    radial-gradient(circle at 100% 78%,  rgba(255,255,255,0.5) 0%,  transparent 1%),
+    radial-gradient(circle at 30% 7%,  rgba(255,255,255,0.5) 0%,  transparent 1.5%),
+    radial-gradient(circle at 0% 47%,  rgba(255,255,255,0.5) 0%,  transparent 2%),
+    radial-gradient(circle at 15% 25%,  rgba(255,255,255,0.5) 0%,  transparent 2.5%),
+    radial-gradient(circle at 52% 93%,  rgba(255,255,255,0.5) 0%,  transparent 3%),
+    radial-gradient(circle at 42% 85%,  rgba(255,255,255,0.5) 0%,  transparent 2.5%),
+    radial-gradient(circle at 23% 13%,  rgba(255,255,255,0.5) 0%,  transparent 2%),
+    radial-gradient(circle at 62% 36%,  rgba(255,255,255,0.5) 0%,  transparent 1.5%),
+    radial-gradient(circle at 10% 67%,  rgba(255,255,255,0.5) 0%,  transparent 1%),
+    radial-gradient(circle at 50% 23%,  rgba(255,255,255,0.5) 0%,  transparent 1%);
+  .generate-entry-link,
+  button.generate-entry,
+  button.dialog-button.generate,
+  button.dialog-button.generating {
+    position: relative; /* Needed for pseudo-element positioning */
+    background-color: var(--legend-lore-color-violet);
+    overflow: hidden;   /* Hides any overflow from the animation */
+  }
+  background-repeat: no-repeat;
+  background-size: 200% 300%;
+  animation: sparkle 5s linear infinite;
+}
+
+@keyframes sparkle {
+  0% {
+    background-position: 0% 0%;
+    opacity: 0;
+  }
+  25% {
+    background-position: 0% 50%;
+    opacity: 1;
+  }
+  50% {
+    background-position: 0% 100%;
+    opacity: 1;
+  }
+  75% {
+    background-position: 0% 150%;
+    opacity: 1;
+  }
+  100% {
+    background-position: 0% 200%;
+    opacity: 0;
+  }
+}
+
+button.dialog-button.generating {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    color: white;
+    text-shadow: 0 0 6px white;
+  }
+  50% {
+    color: var(--legend-lore-color-violet);
+    text-shadow: 0 0 6px var(--legend-lore-color-violet);
+  }
+  100% {
+    color: white;
+    text-shadow: 0 0 6px white;
+  }
+}
