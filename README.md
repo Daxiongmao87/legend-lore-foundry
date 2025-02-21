@@ -43,7 +43,7 @@
 
 ### 'Generate Page' Element
 
-![Screenshot](https://github.com/Daxiongmao87/legend-lore-foundry/blob/main/images/screenshot_generate_page.png)
+![Screenshot](https://github.com/Daxiongmao87/legend-lore-foundry/blob/main/images/screenshot_journal_button.png)
 
 ### Content Generation Highlight Feature
 
@@ -142,14 +142,20 @@ The following placeholders are for the module to replace with the appropriate va
       "messages": [
         {
           "role": "system",
-          "content": "You are a narrative generator for role-playing game journals. The content must be diegetic. Avoid anachronistic references. Your output must be a valid JSON object. The following JSON contains your output instructions. Consider everything wrapped in square brackets '[]' as instructions for you to follow."
+          "content": "You are a narrative generator for role-playing game journals. The content must be diegetic. Avoid anachronistic references. Your output must be a valid JSON object. The following JSON contains your output instructions and the format to which your output needs to be. Consider everything wrapped in square brackets '[]' as instructions for you to strictly abide by. Your response must strictly adhere to the following JSON schema: {{ContentSchemaEscaped}}"
         },
         {
           "role": "user",
           "content": "{{GenerationContext}}"
         }
       ],
-      "response_format": {{ContentTemplate}},
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "html_schema"
+          "schema": {{ContentSchema}}
+        }
+      }
     }
     </pre>
 </details>
@@ -161,7 +167,7 @@ The following placeholders are for the module to replace with the appropriate va
       "messages": [
         {
           "role": "system",
-          "content": "You are a narrative generator for role-playing game journals. The content must be diegetic. Avoid anachronistic references. Your output must be a valid JSON object. The following JSON contains your output instructions. Consider everything wrapped in square brackets '[]' as instructions for you to follow. Response format: '{{ContentTemplate}}'",
+          "content": "You are a narrative generator for role-playing game journals. The content must be diegetic. Avoid anachronistic references. Your output must be a valid JSON object. The following JSON contains your output instructions and the format to which your output needs to be. Consider everything wrapped in square brackets '[]' as instructions for you to strictly abide by. Your response must strictly adhere to the following JSON schema: {{ContentSchemaEscaped}}"
         },
         {
           "role": "user",
@@ -178,7 +184,7 @@ The following placeholders are for the module to replace with the appropriate va
     {
       "system_instruction": {
         "parts": {
-          "text": "You are a narrative generator for role-playing game journals. The content must be diegetic. Avoid anachronistic references. Your output must be a valid JSON object. The following JSON contains your output instructions. Consider everything wrapped in square brackets '[]' as instructions for you to follow. Response format: '{{ContentTemplate}}'"
+          "text": "You are a narrative generator for role-playing game journals. The content must be diegetic. Avoid anachronistic references. Your output must be a valid JSON object. The following JSON contains your output instructions and the format to which your output needs to be. Consider everything wrapped in square brackets '[]' as instructions for you to strictly abide by. Your response must strictly adhere to the following JSON schema: {{ContentSchemaEscaped}}"
         }
       },
       "contents": {
@@ -189,7 +195,6 @@ The following placeholders are for the module to replace with the appropriate va
     }
     </pre>
 </details>
-:q
 
 * Note: If your API endpoint is not listed here and you've successfully used it with this module, please submit an issue (or PR) to have it added to the list.
 
@@ -212,7 +217,7 @@ This is the path to the content in the JSON response from the AI model.  This is
 <details>
     <summary>Google AI Studio</summary>
     <pre>
-    .candidates.0.content.parts.0.text
+    candidates.0.content.parts.0.text
     </pre>
 </details>
 

@@ -1,4 +1,6 @@
 import { log } from './utils.js';
+
+const SYSTEM_PROMPT="You are a narrative generator for role-playing game journals. The content must be diegetic. Avoid anachronistic references. Your output must be a valid JSON object. The following JSON contains your output instructions and the format to which your output needs to be. Consider everything wrapped in square brackets '[]' as instructions for you to strictly abide by. Your response must strictly adhere to the following JSON schema: {{ContentSchemaEscaped}}"
 /**
  * Registers the module's settings in Foundry VTT.  This allows for flexible API endpoint configuration.
  */
@@ -12,14 +14,20 @@ export function registerSettings() {
   "messages": [
     {
       "role": "system",
-      "content": "You are a narrative generator for role-playing game journals. The content must be diegetic. Avoid anachronistic references. Your output must be a valid JSON object. The following JSON contains your output instructions. Consider everything wrapped in square brackets '[]' as instructions for you to follow."
+      "content": "${SYSTEM_PROMPT}"
     },
     {
       "role": "user",
       "content": "{{GenerationContext}}"
     }
   ],
-  "response_format": {{ContentTemplate}},
+  "response_format": {
+    "type": "json_schema",
+    "json_schema": {
+      "name": "html_schema"
+      "schema": {{ContentSchema}}
+    }
+  }
 }`
     game.settings.register('legend-lore', 'https', {
         name: 'Enable HTTPS',

@@ -1,6 +1,5 @@
 import { processLLMRequest } from "./api.js"; import { createNewJournalEntryPage } from "./journalManager.js";
-import { ElementHandler } from './elementTransformer.js';
-import { log, jsonToSchema } from './utils.js';
+import { ElementHandler, log, jsonToSchema } from './utils.js';
 /**
  * Opens a dialog in the Foundry VTT UI based on the provided options. This dialog is used for user interactions related to AI content generation.
  * @param {Object} options - The options for the dialog.
@@ -320,46 +319,75 @@ async function handleGenerate(options = {
     if (additionalContext) {
       contentTemplateInstructions += `, Additional Context: ${additionalContext}`;
     }
-    contentTemplateInstructions+=`, JSON Format: ${JSON.stringify(contentTemplateObj)}`
+   //make string JSON-friendly
+    contentTemplateInstructions+=`, JSON Format: ${JSON.stringify(contentTemplateObj)}`;
+    contentTemplateInstructions = JSON.stringify(contentTemplateInstructions);
 
    // JSON.stringify(contentTemplateObj);
     const contentTemplateSchema = JSON.stringify(jsonToSchema(contentTemplateObj));
 
     // Call processLLMRequest with userInput and contentTemplate.
     let data;
-    data = await processLLMRequest({
-        model: model,
-        contentTemplateInstructions: contentTemplateInstructions,
-        contentTemplateSchema: contentTemplateSchema
-    });
-    // If data returns an error, log it and update the UI.
-    if (data.error) {
-        log({
-          message: data.error,
-          type: ["error"],
-          display: ["error", "ui"]
+    //start async timer
+    const startTime = performance.now();
+    const maxTries = game.settings.get('legend-lore','generationTryLimit');
+    let tries = 0;
+    let text
+    while (tries < maxTries) {
+      tries++;
+      if (tries > 1) {
+        genButton.innerHTML = `<i class="fas fa-spinner-third fa-spin"></i> Generating (Try ${tries} of ${maxTries})...`;
+      }
+      try {
+        data = await processLLMRequest({
+            model: model,
+            contentTemplateInstructions: contentTemplateInstructions,
+            contentTemplateSchema: contentTemplateSchema
         });
-        formElements.prop('disabled', false);
-        genButton.classList.remove('generating');
-        $(options.html).find(".dialog-button.generate")[0].innerHTML = `<i class="fas fa-spinner-third"></i> Generate`;
-        return;
-    }
-
-    let text;
-    try {
-        // Expecting the response to be a JSON with an 'output' field.
-        text = ElementHandler.jsonToHtml(data.responseJSON);
-        console.log(text)
-    } catch (error) {
+        break;
+      } catch (error) {
         log({
-          message:"Error parsing JSON response.",
+          message: "Error processing LLM request.",
           error: error,
           type: ["error"],
           display: ["error", "ui"]
         });
+      }
+    }
+    const endTime = performance.now();
+    // Format should be "x seconds, or x minutes and x seconds"
+    const generationTime = Math.floor((endTime - startTime) / 1000);
+    let generationTimeString;
+    if (generationTime > 60) {
+      const minutes = Math.floor(generationTime / 60);
+      const seconds = Math.floor(generationTime % 60);
+      generationTimeString = `${minutes} minutes and ${seconds} seconds`;
+    }
+    else {
+      generationTimeString = `${generationTime} seconds`;
+    }
+    if (tries === maxTries) {
+      log({
+        message: "Generation failed after maximum tries.",
+        type: ["error"],
+        display: ["error", "ui"]
+      });
+      text = "Generation failed after maximum tries.";
+    }
+    else {
+      try {
+        text = ElementHandler.jsonToHtml(data);
+      } catch (error) {
+        log({
+          message: "Error converting JSON to HTML.",
+          error: error,
+          type: ["error"],
+          display: ["error", "ui"]
+        });
+      }
     }
     try {
-        updateUIAfterResponse(options.html, text, data.tries, data.generationTime);
+        updateUIAfterResponse(options.html, text, tries, maxTries, generationTimeString);
     } catch (error) {
         log({
           message: "Error updating UI after response.",
@@ -369,7 +397,6 @@ async function handleGenerate(options = {
         });
     }
     formElements.prop('disabled', false);
-    genButton.classList.remove('generating');
 }
 
 
@@ -379,13 +406,17 @@ async function handleGenerate(options = {
  * @param {HTMLElement} returnedContent - The HTML element containing the generated content.
  * @param {Object} tokens - Token usage information.
  */
-function updateUIAfterResponse(html, returnedContent, retryCount, generationTime) {
+function updateUIAfterResponse(html, returnedContent, tryCount, maxTries, generationTime) {
     updatePreviewStyle("generation-preview");
     $(html).find('.legend-lore.generation-preview').html(returnedContent.outerHTML);
-    $(html).find('#retry-count').html(`<strong>Tries: ${retryCount}</strong>`);
-    $(html).find('#generation-time').html(`<strong>Generation Time: ${generationTime}</strong>`);
+    if (tryCount > 1 ) {
+      $(html).find('#generation-metrics').html(`<strong>Generation Time: ${generationTime} (${tryCount}/${maxTries} tries)</strong>`);
+    } else {
+      $(html).find('#generation-metrics').html(`<strong>Generation Time: ${generationTime}</strong>`);
+    }
     $(html).find('#response-container').show();
-    $(html).find(".dialog-button.generate")[0].innerHTML = `<i class="fas fa-spinner-third"></i> Generate`;
+    $(html).find(".dialog-button.generate")[0].innerHTML = `<i class="fas fa-wand-sparkle"></i> Generate`;
+    $(html).find(".dialog-button.generate")[0].classList.remove('generating');
 }
 
 
