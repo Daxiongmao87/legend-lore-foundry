@@ -41,7 +41,7 @@
 
 ![Screenshot](https://github.com/Daxiongmao87/legend-lore-foundry/blob/main/images/screenshot_dialog.png)
 
-### 'Generate Page' Element
+### Generate Button On Journal UI
 
 ![Screenshot](https://github.com/Daxiongmao87/legend-lore-foundry/blob/main/images/screenshot_journal_button.png)
 
