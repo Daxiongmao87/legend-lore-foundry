@@ -26,9 +26,7 @@ jobs:
           VERSION=${GITHUB_REF#refs/heads/}
           VERSION=${VERSION%-release}
           jq ".version = \"$VERSION\"" module.json | sponge module.json
-          jq ".manifest = \"https://github.com/${GITHUB_REPOSITORY}/releases/download/$VERSION/module.json\"" module.json | sponge module.json
-          jq ".download = \"https://github.com/${GITHUB_REPOSITORY}/releases/download/$VERSION/module.zip\"" module.json | sponge module.json
-
+          
       - name: Commit Changes
         run: |
           git config --local user.email "action@github.com"
